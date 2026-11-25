@@ -1,6 +1,6 @@
 ---
 name: id-mm-opt-design
-description: "把某个模块的页面设计并进 Middle-Mile Optimization demo（GitHub Pages 在线 demo，仓库 andyyu6227/middle-mile-demo，线上 https://andyyu6227.github.io/middle-mile-demo/）。用于 PM / 设计师 / 模块 owner 想要设计或更新中程优化套件里某个模块的页面（LH Planner、LH Copilot、Network Optimization Toolbox、Simulation Analysis、Data Gov），并把它合并进同一个 demo。覆盖：拉代码 / fork、按模块文件所有权改自己的一个 HTML、套设计 token、本地自测、分支 + PR 合并原则、Pages 自动发布校验。Do NOT use for：PPT / 汇报页、独立 HTML 报告、产品代码仓库改动。"
+description: "把某个模块的页面设计并进 Middle-Mile Optimization demo（GitHub Pages 在线 demo，仓库 andyyu6227/middle-mile-demo，线上 https://andyyu6227.github.io/middle-mile-demo/）。用于 PM / 设计师 / 模块 owner 想要设计或更新中程优化套件里某个模块的页面（LH Planner、LH Copilot、Network Optimization Toolbox、Simulation Analysis、Data Gov），并把它合并进同一个 demo。覆盖：拉代码 / fork、按模块文件所有权改自己的一个 HTML、套设计 token、本地自测、分支 + PR 合并原则、Pages 自动发布校验。也覆盖"手上已有能跑的交互 demo，要原样搬进某个模块"（快照嵌入：modules/<key>-app.html + 薄壳，含脱敏与体积例外）。Do NOT use for：PPT / 汇报页、独立 HTML 报告、产品代码仓库改动。"
 ---
 
 # ID MM Opt Design — 把模块设计并进同一个 demo
@@ -22,7 +22,9 @@ description: "把某个模块的页面设计并进 Middle-Mile Optimization demo
 
 1. **哪个模块**：`lh-planner` / `lh-copilot` / `network-opt` / `simulation` / `datagov`（Data Gov 和 LH Copilot 已由 owner 维护，通常只有前三个模块需要别人做）。
 2. **有没有写权限**：是 collaborator（能直接推分支）还是没有（走 fork + PR）。不确定就让用户去仓库 Settings → Collaborators 看，或直接按 fork 流程走。
-3. **是改已有页还是新建页**：三个待接入模块已有页面骨架（`modules/<key>.html`），默认是"在骨架里换内容"。
+3. **你手上有没有已经能跑的 demo**：
+   - 有（单个 HTML、设计导出、双击能开、交互是重点）→ 走**快照嵌入**，读 `references/embed-existing-demo.md`；
+   - 没有 → 三个待接入模块已有骨架（`modules/<key>.html`），在骨架里画内容。
 
 如果用户没说是哪个模块，按它们的定位反推再确认：
 `lh-planner` = 班次/发车计划与 vendor、truck 主数据；`network-opt` = 分拣路径与干线路由优化；`simulation` = 全链路仿真与 what-if。
@@ -60,6 +62,7 @@ git remote add upstream https://github.com/andyyu6227/middle-mile-demo.git
 | Data Gov | `index.html` 内的 Data Gov 相关函数 | `datagov` |
 
 - **默认只改你负责的那一个 `modules/*.html`。** 它是自包含页面，改它不会碰到任何人。
+- **快照嵌入时多一个文件**：`modules/<key>-app.html` 放你的 demo 原件，`modules/<key>.html` 变成薄壳。两个文件都归你，同一个 PR 提。
 - **`modules/registry.js`**：只有一件事可改——把你模块的那一行指向你的文件；新增模块才加一行。不要动别人的行。
 - **`index.html`**：套件外壳 + Data Gov + LH Copilot 页面，属于 demo owner。除非任务明确要求改壳（导航、顶栏、全局样式），否则不要动；要动就先跟 owner 说清楚影响面，并且单独开一个 PR。
 - `user-flow.html`、`architecture.html` 同理：改之前先问。
@@ -71,6 +74,8 @@ git remote add upstream https://github.com/andyyu6227/middle-mile-demo.git
 3. **UI 文案英文**；不要写内部敏感信息——仓库是 public，所有数字、名称、站点、车辆、客户都必须是虚构的。
 4. **用套件设计 token**，不要发明新颜色（表见下 §5）。
 5. **文件大小**：单个页面 < 300KB；图片一律内联 SVG 或 data-URI，不要放大图、不要放视频。
+   例外：**快照嵌入**的 `modules/<key>-app.html` 可以到 1.5MB（现有 `modules/lh-copilot-workspace.html` 就是 1.1MB），PR 里写一句 `Snapshot exception: <大小>, source = <来源>`。
+   快照这条路（薄壳代码、要 patch 的 4 处、脱敏）见 `references/embed-existing-demo.md`。
 6. **不要碰全局**：不改 `index.html` 的 `:root`、不改公共 class 的行为。你的样式写在页面自己的 `<style>` 里，类名前缀用你自己的模块缩写（例如 `.nopt-*`），避免和别的页面撞。
 
 ## 5. 设计 token 与组件语言（照这个抄，别自由发挥）
@@ -115,6 +120,7 @@ python3 -m http.server 8000
 - [ ] 窗口从 1440 缩到 1024，布局不崩（允许变成单列，但不能溢出）
 - [ ] 你的页面里没有任何真实业务数据 / 内部代号
 - [ ] `git status` 里只有你负责的文件（+ 必要时 registry.js 一行）
+- [ ] 快照嵌入额外 4 条：iframe 内能点、只有一层滚动条、1024 不横向溢出、断网交互还在（见 `references/embed-existing-demo.md` §3）
 
 ## 7. 提交、PR、合并
 
@@ -167,3 +173,5 @@ PR 规则（合并原则的浓缩版，完整版见 `references/merge-principles
 - `references/troubleshooting.md` —— 常见问题（页面空白、iframe 不显示、线上没更新、冲突等）。
 - `assets/module-template.html` —— 空白模块页模板（页头 + KPI 带 + 两栏 + 表格骨架），从它开始改最快。
 - `assets/pr-template.md` —— PR 正文模板。
+- `references/embed-existing-demo.md` —— 手上已有 demo 时怎么搬进模块（快照嵌入 vs 重画、薄壳代码、4 处 patch、脱敏、体积例外）。
+- `SAMPLE-PROMPT.md` —— 可以直接发给团队照着填的 prompt（主场景：把 LH Planner 交互 demo 并进 `lh-planner` 模块）。

@@ -80,7 +80,8 @@ mkdir -p ~/.claude/skills && cp -r skill/id-mm-opt-design ~/.claude/skills/
 
 然后在对话里说「用 id-mm-opt-design skill，我是 <模块> owner，把 modules/<文件>.html 改成 <页面描述>」，
 它就会按 skill 的流程走：拉代码 → 只改自己的文件 → 套 token → 本地自测 → 提 PR。
-用法示例见 `skill/id-mm-opt-design/SAMPLE-PROMPT.md`，合并原则见 `skill/id-mm-opt-design/references/merge-principles.md`。
+用法示例见 `skill/id-mm-opt-design/SAMPLE-PROMPT.md`（主场景就是把一个已有的交互 demo 并进 `lh-planner` 模块），
+已有的 demo 怎么搬见 `skill/id-mm-opt-design/references/embed-existing-demo.md`，合并原则见 `skill/id-mm-opt-design/references/merge-principles.md`。
 
 ## 团队协作
 
