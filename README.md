@@ -9,23 +9,26 @@
 | 二级模块 | 状态 | 文件 |
 |---|---|---|
 | LH Planner | 待接入（页面骨架） | `modules/lh-planner.html` |
-| LH Copilot | 可用（复刻 dashboard tab） | `index.html` 内置 |
+| LH Copilot | 可用（dashboard tab，按真实组件 1:1 复刻） | `index.html` + `modules/lh-copilot-workspace.html` |
 | Network Optimization Toolbox | 待接入（页面骨架） | `modules/network-opt.html` |
 | Simulation Analysis | 待接入（页面骨架） | `modules/simulation.html` |
-| Data Gov | 可用（KPI + 工单 + 数据集单页） | `index.html` 内置 |
+| Data Gov | 可用（KPI + 工单 + 数据集单页，右上角 + 可新增 dataset / 校验规则） | `index.html` 内置 |
 
 另外 `user-flow.html`（用户流程）和 `architecture.html`（产品架构）是两张说明图，在 Data Gov 页顶栏可点开。
 
 ## 目录结构
 
 ```
-index.html                 ← 套件外壳 + Data Gov + LH Copilot
-modules/registry.js        ← 菜单 key → 模块页面 的映射（共用的唯一一个文件）
-modules/<module>.html      ← 每个模块一个自包含页面，owner 自己改
-user-flow.html             ← 用户流程图
-architecture.html          ← 产品架构图
-.github/workflows/pages.yml ← push to main 自动发布到 GitHub Pages
+index.html                      ← 套件外壳 + Data Gov + LH Copilot
+modules/registry.js             ← 菜单 key → 模块页面 的映射（共用的唯一一个文件）
+modules/<module>.html           ← 每个模块一个自包含页面，owner 自己改
+modules/lh-copilot-workspace.html ← LH Copilot 站点工作台（从真实 app 抓取的静态快照）
+user-flow.html                  ← 用户流程图
+architecture.html               ← 产品架构图
+.github/workflows/pages.yml     ← push to main 自动发布到 GitHub Pages
 ```
+
+`modules/lh-copilot-workspace.html` 是 LH Copilot 真实 dashboard 里那块 iframe（case list + dock chart + lane heatmap）的整页快照，所以视觉 1:1；它偏大（约 1.2MB，含 84 条 lane × 71 个时段的渲染数据）。要更新它，用真实 app 重新抓一次 iframe 的 HTML 覆盖这个文件即可，`index.html` 不需要动。
 
 ## 本地打开
 
