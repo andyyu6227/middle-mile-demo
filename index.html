@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopee | Middle-Mile Optimization</title>
+<style>
+/* ============================================================
+   Shopee Supply Chain design tokens (do not invent new colors)
+   ============================================================ */
+:root {
+  /* Brand */
+  --color-brand: #EE4D2D;
+  --color-brand-hover: #E44A2B;
+  --color-brand-bg: #FFF5F0;
+  /* Semantic */
+  --color-error: #F32345;
+  --color-error-bg: #FFF0F0;
+  --color-success: #1CC461;
+  --color-success-bg: #ECFFF1;
+  --color-warning: #FFB014;
+  --color-warning-bg: #FFF8DB;
+  --color-info: #3274F7;
+  --color-info-bg: #F0F7FF;
+  --color-info2: #FF831D;
+  --color-info2-bg: #FEECE1;
+  --color-info3: #1BAF9D;
+  --color-info3-bg: #E3F5F3;
+  /* Grey Scale */
+  --color-grey-9: #222933;
+  --color-grey-nav: #0E1723;
+  --color-grey-8: #303844;
+  --color-grey-7: #7E8692;
+  --color-grey-6: #959BA4;
+  --color-grey-5: #B5BBC6;
+  --color-grey-4: #E2E6EC;
+  --color-grey-3: #ECF0F4;
+  --color-grey-2: #F5F6F9;
+  --color-grey-1: #F9FAFC;
+  /* Typography */
+  --font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Roboto Mono", "SF Mono", "Courier New", monospace;
+  /* Spacing (4px grid) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  /* Radius */
+  --radius-sm: 2px; --radius-md: 4px; --radius-lg: 8px; --radius-xl: 12px; --radius-full: 9999px;
+  /* Shadows */
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-toolbar: 0 2px 4px rgba(0, 0, 0, 0.06);
+  /* Transitions */
+  --transition-fast: 100ms ease-out;
+  --transition-normal: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--color-grey-8);
+  background: var(--color-grey-2);
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #C1C7D0; border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+.ico { flex: none; }
+
+/* ============ Sidebar (workspace rail) ============ */
+.sidebar {
+  width: 252px; background: var(--color-grey-nav);
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 60;
+  display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid #000;
+}
+.sb-brand { height: 64px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid #1B2633; }
+.sb-glyph {
+  width: 32px; height: 32px; border-radius: 6px; flex: none;
+  background: linear-gradient(135deg, #EE4D2D 0%, #FF831D 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 16px; font-weight: 800;
+  box-shadow: 0 2px 8px rgba(238,77,45,0.35);
+}
+.sb-name { color: #fff; font-size: 13px; font-weight: 700; line-height: 1.2; letter-spacing: .2px; }
+.sb-sub { color: var(--color-grey-7); font-size: 10.5px; line-height: 1.2; margin-top: 3px; white-space: nowrap; }
+.sb-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 8px 16px; }
+.nav-l1 {
+  display: flex; align-items: center; gap: 9px; width: 100%; height: 38px; padding: 0 10px;
+  border: none; background: transparent; border-radius: var(--radius-md); color: #fff;
+  font-size: 13px; font-weight: 600; letter-spacing: .1px; text-align: left; user-select: none;
+}
+.nav-l1:hover { background: rgba(255,255,255,0.05); }
+.nav-l1 .nav-icon { display: flex; color: var(--color-grey-6); flex: none; }
+.nav-l1 .nav-chev { margin-left: auto; display: flex; color: var(--color-grey-7); transition: transform var(--transition-normal); }
+.nav-l1.collapsed .nav-chev { transform: rotate(-90deg); }
+.nav-l2-group { padding: 2px 0 0; }
+.nav-l2 {
+  display: flex; align-items: center; gap: 9px; min-height: 34px; padding: 6px 10px 6px 22px;
+  margin: 1px 0; border-radius: var(--radius-md); color: #9CA3AE; font-size: 12.5px; line-height: 1.3;
+  position: relative; cursor: pointer; user-select: none; transition: background var(--transition-fast), color var(--transition-fast);
+}
+.nav-l2:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-l2 .nav-icon { display: flex; color: #6B7480; flex: none; }
+.nav-l2.active { background: rgba(238,77,45,0.14); color: #fff; }
+.nav-l2.active .nav-icon { color: var(--color-brand); }
+.nav-l2.active::before {
+  content: ''; position: absolute; left: -8px; top: 7px; bottom: 7px; width: 3px;
+  background: var(--color-brand); border-radius: 0 2px 2px 0;
+}
+.sb-foot { flex: none; padding: 10px 12px; border-top: 1px solid #1B2633; display: flex; align-items: center; gap: 9px; }
+.sb-foot-name { color: #fff; font-size: 12px; font-weight: 500; line-height: 1.2; }
+.sb-foot-meta { color: var(--color-grey-7); font-size: 10.5px; line-height: 1.2; margin-top: 3px; }
+
+/* ============ Main / Topbar ============ */
+.main { margin-left: 252px; min-height: 100vh; background: var(--color-grey-2); }
+.topbar {
+  height: 56px; background: #fff; border-bottom: 1px solid var(--color-grey-3);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.user-pill { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 6px; border-radius: var(--radius-md); }
+.user-pill:hover { background: rgba(0,0,0,0.04); }
+.topbar-link { display: inline-flex; align-items: center; gap: 5px; color: var(--color-grey-7); font-size: 12.5px; text-decoration: none; padding: 5px 8px; border-radius: var(--radius-md); }
+.topbar-link:hover { color: var(--color-brand); background: rgba(0,0,0,0.04); }
+.demo-chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px; border-radius: 10px;
+  background: var(--color-grey-2); color: var(--color-grey-7); font-size: 10.5px; font-weight: 600; letter-spacing: .2px;
+}
+.demo-chip::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--color-brand); }
+.user-name { font-size: 13px; }
+.lv-badge { display: inline-flex; align-items: center; height: 16px; padding: 0 6px; border-radius: 8px; background: var(--color-brand); color: #fff; font-size: 10px; font-weight: 600; letter-spacing: .2px; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; flex-wrap: wrap; color: var(--color-grey-7); }
+.breadcrumb .sep { color: var(--color-grey-5); }
+.bc-link { color: var(--color-grey-7); cursor: pointer; border: none; background: none; font-size: 13px; padding: 0; display: inline-flex; align-items: center; gap: 4px; }
+.bc-link:hover { color: var(--color-brand); }
+.breadcrumb .current { color: var(--color-grey-8); font-weight: 500; }
+.content { padding: 24px; }
+
+/* ============ Components ============ */
+.btn {
+  height: 32px; padding: 0 16px; border-radius: var(--radius-md); font-size: 14px;
+  display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent; white-space: nowrap;
+}
+.btn-primary { background: var(--color-brand); color: #fff; border-color: var(--color-brand); }
+.btn-primary:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); }
+.btn-ghost { background: transparent; border-color: var(--color-grey-4); color: var(--color-grey-8); }
+.btn-ghost:hover { background: rgba(0,0,0,0.04); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.link { color: var(--color-info); cursor: pointer; background: none; border: none; font-size: 14px; padding: 0; }
+.link:hover { opacity: 0.85; }
+.icon-btn {
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: transparent; border-radius: var(--radius-md); color: var(--color-grey-6); cursor: pointer;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.04); color: var(--color-grey-8); }
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full);
+  color: #fff; font-size: 12px; font-weight: 500; flex: none; text-align: center;
+}
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.b-success { color: var(--color-success); background: var(--color-success-bg); }
+.b-error { color: var(--color-error); background: var(--color-error-bg); }
+.b-warning { color: var(--color-warning); background: var(--color-warning-bg); }
+.b-info { color: var(--color-info); background: var(--color-info-bg); }
+.b-info2 { color: var(--color-info2); background: var(--color-info2-bg); }
+.b-info3 { color: var(--color-info3); background: var(--color-info3-bg); }
+.b-neutral { color: var(--color-grey-7); background: var(--color-grey-2); }
+.tag-type { display: inline-flex; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 12px; color: var(--color-grey-8); background: var(--color-grey-2); border: 1px solid var(--color-grey-4); white-space: nowrap; }
+.tag-app { display: inline-flex; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 12px; color: var(--color-info); background: var(--color-info-bg); margin-right: 4px; white-space: nowrap; }
+
+.card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 20px; }
+.card-title { font-size: 16px; font-weight: 500; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 16px; }
+.page-title { font-size: 20px; font-weight: 500; }
+.page-desc { font-size: 12px; color: var(--color-grey-7); margin-top: 4px; }
+
+/* Forms */
+.input, select.input, textarea.input {
+  height: 32px; border: 1px solid var(--color-grey-4); border-radius: var(--radius-md);
+  padding: 0 12px; font-size: 14px; color: var(--color-grey-8); background: #fff; outline: none;
+}
+textarea.input { height: auto; padding: 8px 12px; resize: vertical; }
+.input:focus { border-color: var(--color-info); }
+.select-wrap { position: relative; display: inline-block; }
+.select-wrap select { appearance: none; -webkit-appearance: none; padding-right: 28px; cursor: pointer; }
+.select-wrap .ico { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--color-grey-6); }
+.person-select { position: relative; display: inline-block; width: 100%; }
+.person-select-trigger {
+  display: flex; align-items: center; gap: 8px; height: 32px; border: 1px solid var(--color-grey-4);
+  border-radius: var(--radius-md); padding: 0 8px 0 6px; background: #fff; cursor: pointer; user-select: none;
+}
+.person-select-trigger:hover { border-color: var(--color-info); }
+.person-select-trigger .ico { margin-left: auto; color: var(--color-grey-6); }
+.person-select-name { flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.person-select-menu {
+  position: absolute; left: 0; right: 0; top: 36px; z-index: 20; background: #fff;
+  border-radius: var(--radius-md); box-shadow: var(--shadow-dropdown); max-height: 220px; overflow: auto; display: none;
+}
+.person-select.open .person-select-menu { display: block; }
+.person-option { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; font-size: 14px; }
+.person-option:hover { background: #F9FAFC; }
+.person-option.selected { color: var(--color-brand); }
+.person-option .avatar { pointer-events: none; }
+.search-wrap { position: relative; display: inline-block; }
+.search-wrap .ico { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--color-grey-6); }
+.search-wrap input { padding-left: 32px; }
+.form-label { display: block; font-size: 14px; font-weight: 500; color: var(--color-grey-8); margin-bottom: 8px; }
+.form-label .req { color: var(--color-error); }
+.form-item { margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Table */
+.table-card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-card); overflow: hidden; overflow-x: auto; }
+table.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  background: var(--color-grey-2); color: var(--color-grey-8); font-weight: 500; font-size: 14px;
+  text-align: left; padding: 12px 14px; white-space: nowrap;
+}
+.data-table td { padding: 14px 14px; border-bottom: 1px solid var(--color-grey-4); font-size: 14px; vertical-align: middle; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr { cursor: pointer; }
+.data-table tbody tr:hover { background: var(--color-grey-1); }
+.cell-primary { font-weight: 500; }
+.cell-muted { color: var(--color-grey-7); }
+.owner-cell { display: flex; align-items: center; gap: 8px; }
+.actions-cell { display: flex; align-items: center; gap: 16px; }
+.actions-cell .link { font-size: 14px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--color-grey-4); margin-bottom: 20px; }
+.tab { padding: 12px 16px; font-size: 14px; color: var(--color-grey-7); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; }
+.tab.active { color: var(--color-grey-8); border-bottom-color: var(--color-brand); font-weight: 500; }
+.tab:hover { color: var(--color-grey-8); }
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; flex: none; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background: var(--color-grey-5); border-radius: var(--radius-full); transition: var(--transition-normal); }
+.slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 2px; top: 2px; background: #fff; border-radius: 50%; transition: var(--transition-normal); }
+.switch input:checked + .slider { background: var(--color-brand); }
+.switch input:checked + .slider::before { transform: translateX(16px); }
+
+/* Detail header */
+.detail-head { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 20px; margin-bottom: 16px; }
+.detail-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.detail-name { font-size: 20px; font-weight: 500; }
+.detail-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.detail-desc { font-size: 13px; color: var(--color-grey-7); }
+.detail-actions { display: flex; gap: 8px; }
+.back-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+
+/* Modal */
+.modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-start; justify-content: center; padding: 60px 16px; z-index: 100; }
+.modal { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-dropdown); width: 560px; max-width: 100%; max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
+.modal-head { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-grey-4); flex: none; }
+.modal-title { font-size: 18px; font-weight: 500; }
+.modal-body { padding: 24px; overflow: auto; }
+.modal-foot { padding: 16px 24px; border-top: 1px solid var(--color-grey-4); display: flex; justify-content: flex-end; gap: 8px; flex: none; }
+.rule-add-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px; }
+.rule-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radius-md); background: var(--color-grey-2); font-size: 12px; margin: 0 6px 6px 0; }
+
+/* Drawer */
+.drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; transition: opacity var(--transition-slow); }
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 480px; background: #fff; z-index: 91;
+  transform: translateX(100%); transition: transform var(--transition-slow); display: flex; flex-direction: column;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.12);
+}
+#drawer-root.open .drawer-mask { opacity: 1; }
+#drawer-root.open .drawer { transform: translateX(0); }
+.drawer-head { padding: 20px 24px; border-bottom: 1px solid var(--color-grey-4); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex: none; }
+.drawer-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+.drawer-badges { display: flex; gap: 6px; }
+.drawer-body { padding: 20px 24px; overflow: auto; flex: 1; }
+.drawer-section { margin-bottom: 24px; }
+.drawer-section-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+.info-row { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 7px 0; font-size: 14px; border-bottom: 1px solid var(--color-grey-3); }
+.info-row:last-child { border-bottom: none; }
+.info-row .k { color: var(--color-grey-7); }
+.info-row .v { text-align: left; word-break: break-all; }
+.flow { display: flex; align-items: center; margin-bottom: 14px; }
+.step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: none; }
+.step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--color-grey-4); }
+.step.active .step-dot { background: var(--color-info); box-shadow: 0 0 0 3px var(--color-info-bg); }
+.step.done .step-dot { background: var(--color-success); }
+.step-label { font-size: 11px; color: var(--color-grey-6); }
+.step.active .step-label { color: var(--color-grey-8); font-weight: 500; }
+.step-line { flex: 1; height: 2px; background: var(--color-grey-3); margin: 0 8px 16px; }
+.timeline { position: relative; padding-left: 18px; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 4px; bottom: 4px; width: 2px; background: var(--color-grey-3); }
+.tl-item { position: relative; padding-bottom: 16px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot { position: absolute; left: -18px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--color-grey-5); }
+.tl-item:first-child .tl-dot { border-color: var(--color-brand); }
+.tl-text { font-size: 13px; }
+.tl-meta { font-size: 12px; color: var(--color-grey-6); margin-top: 2px; }
+.comment-item { padding: 10px 12px; background: var(--color-grey-1); border-radius: var(--radius-md); margin-bottom: 8px; }
+.comment-author { font-size: 12px; font-weight: 500; }
+.comment-time { font-size: 11px; color: var(--color-grey-6); margin-left: 8px; }
+.comment-text { font-size: 13px; margin-top: 4px; word-break: break-word; }
+.comment-input { display: flex; gap: 8px; margin-top: 4px; }
+.comment-input input { flex: 1; }
+.resolve-box { display: flex; flex-direction: column; gap: 8px; }
+.closed-note { font-size: 13px; color: var(--color-grey-6); }
+
+/* Toast */
+#toast-root { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.toast { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); font-size: 14px; box-shadow: var(--shadow-dropdown); opacity: 0; transform: translateY(-8px); transition: var(--transition-slow); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast span { color: var(--color-grey-8); }
+.toast-success { background: var(--color-success-bg); }
+.toast-success .ico { color: var(--color-success); }
+.toast-error { background: var(--color-error-bg); }
+.toast-error .ico { color: var(--color-error); }
+.toast-info { background: var(--color-info-bg); }
+.toast-info .ico { color: var(--color-info); }
+
+.empty { padding: 40px; text-align: center; color: var(--color-grey-6); font-size: 14px; }
+
+/* Config two-column layout */
+.cfg-cols{display:flex;gap:32px;align-items:flex-start}.cfg-form{flex:1.1 1 0;min-width:0}.cfg-audit{flex:1 1 0;min-width:0;padding-left:32px;border-left:1px solid var(--color-grey-3)}.cfg-audit .timeline{max-height:300px;overflow:auto}@media(max-width:1023px){.cfg-cols{flex-direction:column}.cfg-audit{padding-left:0;border-left:0;border-top:1px solid var(--color-grey-3);padding-top:16px;margin-top:8px}}
+
+/* =====================================================================
+   Suite pages: page head / KPI / panels / Data Gov two-column layout
+   ===================================================================== */
+.ph { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.ph-title { font-size: 20px; font-weight: 500; letter-spacing: -.1px; }
+.ph-desc { font-size: 12.5px; color: var(--color-grey-7); margin-top: 5px; max-width: 860px; line-height: 1.55; }
+.ph-actions { display: flex; align-items: center; gap: 8px; }
+.btn-sm { height: 26px; padding: 0 10px; font-size: 12px; border-radius: var(--radius-md); }
+.input-sm { height: 26px; font-size: 11.5px; padding: 0 8px; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi-card {
+  position: relative; background: #fff; border: 1px solid var(--color-grey-4);
+  border-radius: var(--radius-md); padding: 13px 15px; overflow: hidden; min-width: 0;
+  display: flex; flex-direction: column;
+}
+.kpi-card .kc-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.kpi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.kpi-label {
+  font-size: 10px; font-weight: 600; color: var(--color-grey-7); text-transform: uppercase;
+  letter-spacing: .55px; line-height: 1.35;
+}
+.kpi-chip {
+  display: inline-flex; align-items: center; gap: 4px; height: 17px; padding: 0 6px; border-radius: 3px;
+  font-size: 9.5px; font-weight: 600; white-space: nowrap; flex: none; letter-spacing: .2px;
+}
+.kpi-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.st-ok { background: var(--color-success-bg); color: #0E8F45; }
+.st-bad { background: var(--color-error-bg); color: var(--color-error); }
+.st-warn { background: var(--color-warning-bg); color: #B87D00; }
+.st-info { background: var(--color-info-bg); color: var(--color-info); }
+.st-neutral { background: var(--color-grey-2); color: var(--color-grey-7); }
+.kpi-value { display: flex; align-items: baseline; gap: 5px; margin-top: 9px; }
+.kpi-value b { font-size: 25px; font-weight: 600; line-height: 1; color: var(--color-grey-8); font-variant-numeric: tabular-nums; }
+.kpi-value span { font-size: 11.5px; font-weight: 500; color: var(--color-grey-7); white-space: nowrap; }
+.kpi-sub { margin-top: auto; padding-top: 8px; font-size: 10.5px; color: var(--color-grey-7); line-height: 1.4; }
+
+/* Two-column Data Gov layout */
+.gov-grid { display: grid; grid-template-columns: 372px minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.panel { background: #fff; border: 1px solid var(--color-grey-4); border-radius: var(--radius-md); min-width: 0; display: flex; flex-direction: column; }
+.panel-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--color-grey-3); flex: none; }
+.panel-title { font-size: 13.5px; font-weight: 600; color: var(--color-grey-8); }
+.panel-count { font-size: 10.5px; font-weight: 600; color: var(--color-grey-7); background: var(--color-grey-2); border-radius: 9px; padding: 2px 7px; }
+.panel-head .spacer { flex: 1; min-width: 4px; }
+.panel-body { overflow: auto; flex: 1; min-height: 0; }
+
+/* Ticket list (left column) */
+.tk-list { padding: 6px; display: flex; flex-direction: column; gap: 2px; flex: 1; min-height: 0; overflow-y: auto; }
+.tk-item { position: relative; padding: 10px 11px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid transparent; }
+.tk-item:hover { background: var(--color-grey-1); }
+.tk-item.sel { background: var(--color-brand-bg); border-color: #FFD9CB; }
+.tk-item.sel::before { content: ''; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 0 2px 2px 0; background: var(--color-brand); }
+.tk-top { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+.tk-id { font-size: 10.5px; font-weight: 600; color: var(--color-grey-7); font-variant-numeric: tabular-nums; letter-spacing: .2px; }
+.tk-title { font-size: 12.5px; font-weight: 500; color: var(--color-grey-8); line-height: 1.4; margin-bottom: 7px; }
+.tk-meta { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--color-grey-6); }
+.tk-ds {
+  display: inline-flex; align-items: center; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: var(--color-grey-2); color: var(--color-grey-8); border-radius: 3px; padding: 1px 6px; font-size: 10.5px;
+}
+.tk-when { margin-left: auto; white-space: nowrap; }
+.badge.badge-sm { font-size: 10px; padding: 1px 6px; line-height: 15px; }
+
+/* Dataset table (right column) */
+.gov-table { width: 100%; border-collapse: collapse; }
+.gov-table th {
+  position: sticky; top: 0; z-index: 1; background: #fff; text-align: left;
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--color-grey-7);
+  padding: 9px 12px; border-bottom: 1px solid var(--color-grey-4); white-space: nowrap;
+}
+.gov-table td { padding: 10px 12px; border-bottom: 1px solid var(--color-grey-3); font-size: 12px; vertical-align: middle; }
+.gov-table tbody tr { cursor: pointer; }
+.gov-table tbody tr:hover { background: var(--color-grey-1); }
+.gov-table tbody tr.hl { background: var(--color-brand-bg); }
+.gov-table tbody tr.hl td:first-child { box-shadow: inset 3px 0 0 var(--color-brand); }
+.gov-table tbody tr:last-child td { border-bottom: none; }
+.ds-name { font-size: 12.5px; font-weight: 500; color: var(--color-grey-8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-id { font-size: 10.5px; color: var(--color-grey-6); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.ds-apps { display: flex; gap: 3px; flex-wrap: nowrap; }
+.ds-app { font-size: 9.5px; padding: 1px 5px; border-radius: 2px; background: var(--color-info-bg); color: var(--color-info); white-space: nowrap; font-weight: 500; }
+.owner-cell-sm { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.gov-foot { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-top: 1px solid var(--color-grey-3); font-size: 11px; color: var(--color-grey-7); flex: none; }
+
+/* Affected-dataset strip (ticket -> dataset link) */
+.affected { margin: 9px 12px 0; padding: 7px 10px; background: var(--color-brand-bg); border: 1px solid #FFD9CB; border-radius: var(--radius-md); }
+.af-row { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.af-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-brand); flex: none; }
+.af-k { font-size: 10.5px; font-weight: 600; color: var(--color-brand); font-variant-numeric: tabular-nums; }
+.af-name { font-size: 12px; font-weight: 600; color: var(--color-grey-8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.af-meta { font-size: 10.5px; color: var(--color-grey-7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* =====================================================================
+   LH Copilot dashboard (fake, mirrors the module's UI)
+   ===================================================================== */
+.cp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.cp-filters { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.cp-filter { display: flex; flex-direction: column; gap: 5px; }
+.cp-filter label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .55px; color: var(--color-grey-7); font-weight: 600; }
+.cp-note { font-size: 12px; color: var(--color-grey-7); line-height: 1.5; }
+
+.alert-card {
+  display: flex; gap: 12px; align-items: flex-start; background: #fff;
+  border: 1px solid var(--color-grey-4); border-left: 3px solid var(--color-error);
+  border-radius: var(--radius-md); padding: 13px 15px; margin-bottom: 14px;
+}
+.alert-ic { width: 24px; height: 24px; border-radius: 50%; background: var(--color-error); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: none; margin-top: 1px; }
+.alert-line1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.alert-title { font-size: 11px; font-weight: 700; color: #D0182F; letter-spacing: .45px; text-transform: uppercase; }
+.alert-strong { font-size: 12px; font-weight: 700; color: #D0182F; }
+.alert-meta { font-size: 10.5px; color: var(--color-grey-6); }
+.alert-desc { font-size: 12px; color: var(--color-grey-8); line-height: 1.55; margin-top: 5px; max-width: 980px; }
+.alert-actions { display: flex; gap: 6px; margin-top: 9px; }
+.alert-sep { flex: 1; }
+
+.kpi-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.kpi-3 .kpi-card { padding: 15px 17px; }
+.kc-sub-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; padding-top: 6px; margin-top: 6px; border-top: 1px dashed var(--color-grey-3); color: var(--color-grey-7); }
+.kc-sub-row b { color: var(--color-grey-8); font-weight: 600; }
+.kc-subs { margin-top: auto; }
+.kc-sub-row:first-of-type { margin-top: 10px; }
+
+.heat-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 316px; gap: 16px; align-items: start; }
+.heat { display: grid; grid-template-columns: 108px repeat(6, minmax(0, 1fr)); gap: 3px; align-items: center; }
+.heat-h { font-size: 9.5px; font-weight: 600; color: var(--color-grey-7); text-align: center; text-transform: uppercase; letter-spacing: .4px; padding-bottom: 2px; }
+.heat-rl { font-size: 11px; color: var(--color-grey-8); white-space: nowrap; padding-right: 6px; overflow: hidden; text-overflow: ellipsis; }
+.heat-cell { height: 32px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.legend { display: flex; align-items: center; gap: 14px; font-size: 10.5px; color: var(--color-grey-7); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--color-grey-3); flex-wrap: wrap; }
+.lg-sw { width: 11px; height: 11px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+.case-item { display: flex; gap: 9px; padding: 11px 0; border-bottom: 1px solid var(--color-grey-3); }
+.case-item:last-child { border-bottom: none; }
+.case-id { font-size: 10.5px; font-weight: 600; color: var(--color-grey-7); font-variant-numeric: tabular-nums; }
+.case-title { font-size: 12px; font-weight: 500; color: var(--color-grey-8); line-height: 1.4; margin-top: 3px; }
+.case-meta { font-size: 10.5px; color: var(--color-grey-6); margin-top: 4px; }
+
+/* =====================================================================
+   Placeholder pages for modules whose UI is not linked yet
+   ===================================================================== */
+.pending-wrap { max-width: 720px; margin: 0 auto; text-align: center; min-height: calc(100vh - 200px); display: flex; flex-direction: column; justify-content: center; padding-bottom: 40px; }
+.pending-ic { width: 54px; height: 54px; border-radius: 14px; background: var(--color-grey-2); color: var(--color-grey-6); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.pending-title { font-size: 19px; font-weight: 600; color: var(--color-grey-8); }
+.pending-desc { font-size: 12.5px; color: var(--color-grey-7); margin-top: 8px; line-height: 1.6; }
+.pending-note { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 11px; color: var(--color-info2); background: var(--color-info2-bg); padding: 5px 10px; border-radius: 3px; }
+.pending-card { margin-top: 24px; background: #fff; border: 1px solid var(--color-grey-4); border-radius: var(--radius-md); padding: 18px 20px; text-align: left; }
+.pending-card h4 { font-size: 10px; text-transform: uppercase; letter-spacing: .55px; color: var(--color-grey-7); margin-bottom: 10px; font-weight: 600; }
+.pending-card li { font-size: 12.5px; color: var(--color-grey-8); line-height: 1.85; margin-left: 16px; }
+
+/* Module pages are embedded from modules/*.html (see modules/registry.js) */
+.module-frame {
+  width: 100%; height: calc(100vh - 104px); border: 0; display: block;
+  background: var(--color-grey-2); border-radius: var(--radius-md);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Responsive */
+@media (max-width: 1399px) {
+  .col-apps { display: none; }
+  .gov-grid { grid-template-columns: 340px minmax(0, 1fr); }
+}
+@media (max-width: 1280px) {
+  .kpi-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .gov-grid { grid-template-columns: 320px minmax(0, 1fr); }
+  .heat-wrap { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1100px) {
+  .gov-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1023px) {
+  .sidebar { width: 64px; }
+  .main { margin-left: 64px; }
+  .sb-sub, .sb-name, .nav-l1 span:not(.nav-icon):not(.nav-chev), .nav-l2 .nav-label, .sb-foot .sb-foot-name, .sb-foot .sb-foot-meta { display: none; }
+  .sb-brand { justify-content: center; padding: 0; }
+  .nav-l1, .nav-l2 { justify-content: center; padding: 0; }
+  .nav-l2 { padding-left: 0; }
+  .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gov-grid { grid-template-columns: minmax(0, 1fr); }
+  .kpi-3 { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main">
+  <header class="topbar">
+    <nav id="breadcrumb" class="breadcrumb" aria-label="Breadcrumb"></nav>
+    <div class="topbar-right">
+      <span id="topbar-extra" style="display:flex;align-items:center;gap:2px"></span>
+      <span class="demo-chip">Demo</span>
+      <div class="user-pill">
+        <span class="avatar" style="width:28px;height:28px;line-height:28px;background:#8B4A2B">H</span>
+        <span class="user-name">Huaian</span>
+        <span class="lv-badge">Lv4</span>
+      </div>
+    </div>
+  </header>
+  <main id="content" class="content"></main>
+</div>
+
+<div id="modal-root"></div>
+<div id="drawer-root"></div>
+<div id="toast-root"></div>
+
+<!-- Optional: maps menu keys to the team's module pages (modules/*.html).
+     Without it, modules fall back to the built-in placeholder page. -->
+<script src="modules/registry.js"></script>
+
+<script>
+
+'use strict';
+
+/* =====================================================================
+   1. Utilities / icons / base components
+   ===================================================================== */
+
+// Line SVG icons (16px, stroke 1.5, currentColor)
+var ICON = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+  db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>',
+  branch: '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  checkCircle: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  playCircle: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  ticket: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>',
+  terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  chevDown: '<polyline points="6 9 12 15 18 9"/>',
+  chevRight: '<polyline points="9 18 15 12 9 6"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
+  edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  warn: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  back: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+  zoomIn: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>',
+  zoomOut: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>',
+  fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  play: '<polygon points="5 3 19 12 5 21 5 3"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+  history: '<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/>',
+  send: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+  activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  alert: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+  calendar: '<rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  arrowRight: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  truck: '<rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="18.5" r="1.8"/><circle cx="17.5" cy="18.5" r="1.8"/>',
+  grid2: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>'
+};
+
+function ic(name, size, cls) {
+  size = size || 16; cls = cls || '';
+  return '<svg class="ico ' + cls + '" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[name] || '') + '</svg>';
+}
+
+function $(sel, root) { return (root || document).querySelector(sel); }
+function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function fmtNum(n) { return Number(n || 0).toLocaleString('en-US'); }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function fmtAbs(iso) {
+  var d = new Date(iso);
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+function fmtClock(iso) {
+  var d = new Date(iso);
+  return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+function timeAgo(iso) {
+  var diff = Date.now() - new Date(iso).getTime();
+  var m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + ' min ago';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + ' h ago';
+  var d = Math.floor(h / 24);
+  if (d < 30) return d + ' d ago';
+  return fmtAbs(iso).slice(0, 10);
+}
+
+// Semantic mappings (colors always from design spec tokens)
+var STATUS = {
+  online: { label: 'Online', cls: 'b-success' },
+  offline: { label: 'Offline', cls: 'b-neutral' },
+  degraded: { label: 'Degraded', cls: 'b-info2' },
+  bug: { label: 'Bug', cls: 'b-error' }
+};
+var VALID = {
+  'Passed': { label: 'Passed', cls: 'b-success' },
+  'Failed': { label: 'Failed', cls: 'b-error' },
+  'Running': { label: 'Running', cls: 'b-info' },
+  'Not configured': { label: 'Not configured', cls: 'b-neutral' }
+};
+var SEV = { 'High': { label: 'High', cls: 'b-error' }, 'Medium': { label: 'Medium', cls: 'b-info2' }, 'Low': { label: 'Low', cls: 'b-neutral' } };
+var TSTATUS = {
+  'Open': { label: 'Open', cls: 'b-info' },
+  'In Progress': { label: 'In Progress', cls: 'b-info2' },
+  'Validating': { label: 'Validating', cls: 'b-info3' },
+  'Resolved': { label: 'Resolved', cls: 'b-success' },
+  'Closed': { label: 'Closed', cls: 'b-neutral' }
+};
+var PRI = { 'High': { label: 'High', cls: 'b-error' }, 'Medium': { label: 'Medium', cls: 'b-info2' }, 'Low': { label: 'Low', cls: 'b-neutral' } };
+var RULESULT = { 'Passed': { label: 'Passed', cls: 'b-success' }, 'Failed': { label: 'Failed', cls: 'b-error' }, 'Not run': { label: 'Not run', cls: 'b-neutral' } };
+
+function badge(map, key) {
+  var m = map[key] || { label: key, cls: 'b-neutral' };
+  return '<span class="badge ' + m.cls + '">' + esc(m.label) + '</span>';
+}
+function avatar(name, color, size) {
+  size = size || 24; color = color || '#7E8692';
+  var init = String(name || '?').trim().charAt(0).toUpperCase();
+  return '<span class="avatar" style="width:' + size + 'px;height:' + size + 'px;line-height:' + size + 'px;background:' + color + '">' + esc(init) + '</span>';
+}
+function typeTag(t) { return '<span class="tag-type">' + esc(t) + '</span>'; }
+function appTags(apps) {
+  return (apps || []).map(function (a) { return '<span class="tag-app">' + esc(a) + '</span>'; }).join('');
+}
+function personChip(name) {
+  var p = findPerson(name);
+  return '<span class="owner-cell" style="gap:6px">' + avatar(p.name, p.color, 20) + '<span>' + esc(p.name) + '</span></span>';
+}
+function selectWrap(name, opts, selected, cls) {
+  var h = '<span class="select-wrap"><select class="input ' + (cls || '') + '" ' + name + '>';
+  h += opts.map(function (o) {
+    var val = o.v, label = o.l;
+    return '<option value="' + esc(val) + '"' + (val === selected ? ' selected' : '') + '>' + esc(label) + '</option>';
+  }).join('');
+  h += '</select>' + ic('chevDown', 16) + '</span>';
+  return h;
+}
+function personSelect(id, selectedName) {
+  var p = findPerson(selectedName);
+  var opts = PEOPLE.map(function (x) {
+    return '<div class="person-option' + (x.name === p.name ? ' selected' : '') + '" data-name="' + esc(x.name) + '">' + avatar(x.name, x.color, 20) + '<span>' + esc(x.name) + '</span></div>';
+  }).join('');
+  return '<div class="person-select" data-person-select="' + esc(id) + '">' +
+    '<div class="person-select-trigger" tabindex="0">' +
+    '<span class="person-select-avatar">' + avatar(p.name, p.color, 20) + '</span>' +
+    '<span class="person-select-name">' + esc(p.name) + '</span>' +
+    ic('chevDown', 16) +
+    '</div>' +
+    '<div class="person-select-menu">' + opts + '</div>' +
+    '<input type="hidden" id="' + esc(id) + '" value="' + esc(p.name) + '">' +
+    '</div>';
+}
+function closeAllPersonMenus() {
+  $all('.person-select.open').forEach(function (w) { w.classList.remove('open'); });
+}
+function switchHTML(id, on, cls) {
+  return '<label class="switch ' + (cls || '') + '"><input type="checkbox" data-action="toggle-rule" data-id="' + id + '"' + (on ? ' checked' : '') + '><span class="slider"></span></label>';
+}
+
+/* =====================================================================
+   2. Seed data (§4 / §5, single DATA object)
+   ===================================================================== */
+
+var NOW = Date.now();
+function ISO(minsAgo) { return new Date(NOW - minsAgo * 60000).toISOString(); }
+
+var PEOPLE = [
+  { name: 'Lena Wang', color: '#EE4D2D' },
+  { name: 'Li Chen', color: '#3274F7' },
+  { name: 'Ayu Putri', color: '#1BAF9D' },
+  { name: 'Marcus Tan', color: '#7C5BD6' },
+  { name: 'Xiang Li', color: '#FF831D' },
+  { name: 'Priya Nair', color: '#E14E8A' },
+  { name: 'Qiang Wang', color: '#1CC461' },
+  { name: 'Sofia Lim', color: '#B78B2E' },
+  { name: 'Wei Zhang', color: '#0E9AA7' },
+  { name: 'Rizky Pratama', color: '#5B8DEF' },
+  { name: 'Huaian', color: '#6C757D' }
+];
+function findPerson(name) {
+  for (var i = 0; i < PEOPLE.length; i++) if (PEOPLE[i].name === name) return PEOPLE[i];
+  return { name: name, color: '#7E8692' };
+}
+
+var DATA = {
+  dataSources: [
+    {
+      id: 'ds_lh_001', name: 'Linehaul Network Routes', enName: 'lh_network_routes', type: 'DB',
+      source: 'PostgreSQL · jkt-db-prd.lh-routing / table lh_network_routes',
+      owner: { name: 'Lena Wang', color: '#EE4D2D' },
+      lastUpdated: ISO(2), freq: 'Every 5 min', status: 'online', validation: 'Passed', usage: 1284500,
+      apps: ['LH Planner'],
+      schema: [
+        { field: 'route_id', type: 'STRING', desc: 'Unique route identifier', key: true, quality: 'Passed' },
+        { field: 'origin', type: 'STRING', desc: 'Origin sortation center', key: false, quality: 'Passed' },
+        { field: 'destination', type: 'STRING', desc: 'Destination sortation center', key: false, quality: 'Passed' },
+        { field: 'distance_km', type: 'INT', desc: 'Distance (km)', key: false, quality: 'Passed' },
+        { field: 'transit_hours', type: 'FLOAT', desc: 'Transit time (hours)', key: false, quality: 'Passed' },
+        { field: 'valid_from', type: 'DATE', desc: 'Effective date', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v2.3.1', sla: 'P1 · 5min', sensitivity: 'Internal', retention: 'Forever' },
+      description: 'Linehaul network route master data used by LH Planner, including mileage and transit time.'
+    },
+    {
+      id: 'ds_lh_002', name: 'Sortation Center Capacity', enName: 'sortation_capacity', type: 'API',
+      source: 'REST API · https://internal/sortation/capacity',
+      owner: { name: 'Li Chen', color: '#3274F7' },
+      lastUpdated: ISO(5), freq: 'Hourly', status: 'online', validation: 'Passed', usage: 896300,
+      apps: ['LH Planner', 'LH Copilot'],
+      schema: [
+        { field: 'center_id', type: 'STRING', desc: 'Sortation center ID', key: true, quality: 'Passed' },
+        { field: 'capacity_units', type: 'INT', desc: 'Hourly capacity (parcels)', key: false, quality: 'Passed' },
+        { field: 'shift', type: 'STRING', desc: 'Shift', key: false, quality: 'Passed' },
+        { field: 'updated_at', type: 'TIMESTAMP', desc: 'Updated at', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v1.8.0', sla: 'P1 · 1h', sensitivity: 'Internal', retention: '180 days' },
+      description: 'Time-phased capacity of each sortation center, used for network planning and capacity validation.'
+    },
+    {
+      id: 'ds_lh_003', name: 'Fleet Master Data', enName: 'lh_vehicle_fleet', type: 'DB',
+      source: 'MySQL · sg-db.lh_fleet / table lh_vehicle_fleet',
+      owner: { name: 'Ayu Putri', color: '#1BAF9D' },
+      lastUpdated: ISO(18), freq: 'Daily', status: 'online', validation: 'Running', usage: 234500,
+      apps: ['LH Copilot'],
+      schema: [
+        { field: 'vehicle_id', type: 'STRING', desc: 'Vehicle ID', key: true, quality: 'Running' },
+        { field: 'plate_no', type: 'STRING', desc: 'Plate number', key: false, quality: 'Running' },
+        { field: 'vehicle_type', type: 'STRING', desc: 'Vehicle type', key: false, quality: 'Passed' },
+        { field: 'max_load_kg', type: 'INT', desc: 'Max load (kg)', key: false, quality: 'Passed' },
+        { field: 'status', type: 'STRING', desc: 'Vehicle status', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v3.0.2', sla: 'P2 · 24h', sensitivity: 'Confidential', retention: '365 days' },
+      description: 'Linehaul vehicles and own-fleet master data.'
+    },
+    {
+      id: 'ds_lh_004', name: 'Volume Forecast', enName: 'shipment_volume_forecast', type: 'DB',
+      source: 'Hive · datasuite.shipment_volume_forecast',
+      owner: { name: 'Marcus Tan', color: '#7C5BD6' },
+      lastUpdated: ISO(42), freq: 'Hourly', status: 'degraded', validation: 'Failed', usage: 1520000,
+      apps: ['LH Planner', 'Network Optimization Toolbox'],
+      schema: [
+        { field: 'forecast_id', type: 'STRING', desc: 'Forecast ID', key: true, quality: 'Failed' },
+        { field: 'lane', type: 'STRING', desc: 'Lane', key: false, quality: 'Failed' },
+        { field: 'forecast_date', type: 'DATE', desc: 'Forecast date', key: false, quality: 'Failed' },
+        { field: 'forecast_qty', type: 'INT', desc: 'Forecast parcel volume', key: false, quality: 'Failed' },
+        { field: 'confidence', type: 'FLOAT', desc: 'Confidence', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v4.1.0', sla: 'P1 · 1h', sensitivity: 'Confidential', retention: '90 days' },
+      description: 'Forecast parcel volume per lane for upcoming periods, used for scheduling and capacity planning.'
+    },
+    {
+      id: 'ds_lh_005', name: 'Linehaul Trip Schedule', enName: 'linehaul_trip_schedule', type: 'Sheet',
+      source: 'Google Sheet · 1q9x_manual / linehaul_trip_schedule',
+      owner: { name: 'Xiang Li', color: '#FF831D' },
+      lastUpdated: ISO(2880), freq: 'Weekly', status: 'offline', validation: 'Not configured', usage: 12800,
+      apps: ['LH Planner'],
+      schema: [
+        { field: 'trip_id', type: 'STRING', desc: 'Trip ID', key: true, quality: 'Not configured' },
+        { field: 'departure_time', type: 'TIMESTAMP', desc: 'Departure time', key: false, quality: 'Not configured' },
+        { field: 'vehicle_id', type: 'STRING', desc: 'Vehicle ID', key: false, quality: 'Not configured' },
+        { field: 'lane', type: 'STRING', desc: 'Lane', key: false, quality: 'Not configured' }
+      ],
+      meta: { version: 'v0.9.5', sla: 'P2 · 1w', sensitivity: 'Internal', retention: '30 days' },
+      description: 'Manually maintained linehaul trip departure schedule (pending migration to system data).'
+    },
+    {
+      id: 'ds_lh_006', name: 'Vendor Truck Pool', enName: 'vendor_truck_pool', type: 'API',
+      source: 'REST API · https://internal/vendor/truck-pool',
+      owner: { name: 'Priya Nair', color: '#E14E8A' },
+      lastUpdated: ISO(7), freq: 'Every 5 min', status: 'online', validation: 'Passed', usage: 654800,
+      apps: ['LH Copilot'],
+      schema: [
+        { field: 'truck_id', type: 'STRING', desc: 'Truck ID', key: true, quality: 'Passed' },
+        { field: 'vendor', type: 'STRING', desc: 'Vendor', key: false, quality: 'Passed' },
+        { field: 'plate_no', type: 'STRING', desc: 'Plate number', key: false, quality: 'Passed' },
+        { field: 'capacity_kg', type: 'INT', desc: 'Load capacity (kg)', key: false, quality: 'Passed' },
+        { field: 'available_from', type: 'TIMESTAMP', desc: 'Available from', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v2.0.1', sla: 'P1 · 5min', sensitivity: 'Internal', retention: '90 days' },
+      description: 'Dispatchable external vendor truck pool and availability windows.'
+    },
+    {
+      id: 'ds_lh_007', name: 'Route Cost Master', enName: 'route_cost_master', type: 'Sheet',
+      source: 'Google Sheet · route_cost_master / managed by Finance',
+      owner: { name: 'Qiang Wang', color: '#1CC461' },
+      lastUpdated: ISO(180), freq: 'Daily', status: 'bug', validation: 'Failed', usage: 45200,
+      apps: ['LH Planner'],
+      schema: [
+        { field: 'route_id', type: 'STRING', desc: 'Route ID', key: true, quality: 'Failed' },
+        { field: 'cost_per_km', type: 'FLOAT', desc: 'Cost per km', key: false, quality: 'Failed' },
+        { field: 'fuel_surcharge', type: 'FLOAT', desc: 'Fuel surcharge', key: false, quality: 'Failed' },
+        { field: 'currency', type: 'STRING', desc: 'Currency', key: false, quality: 'Passed' },
+        { field: 'valid_from', type: 'DATE', desc: 'Effective date', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v1.4.0', sla: 'P2 · 24h', sensitivity: 'Sensitive', retention: '365 days' },
+      description: 'Route transport cost and fuel surcharge master data.'
+    },
+    {
+      id: 'ds_lh_008', name: 'Customer SLA Master', enName: 'customer_sla_master', type: 'DB',
+      source: 'MySQL · sg-db.customer / table customer_sla_master',
+      owner: { name: 'Sofia Lim', color: '#B78B2E' },
+      lastUpdated: ISO(12), freq: 'Hourly', status: 'online', validation: 'Passed', usage: 732100,
+      apps: ['LH Planner', 'LH Copilot'],
+      schema: [
+        { field: 'customer_id', type: 'STRING', desc: 'Customer ID', key: true, quality: 'Passed' },
+        { field: 'sla_hours', type: 'INT', desc: 'SLA hours', key: false, quality: 'Passed' },
+        { field: 'priority', type: 'STRING', desc: 'Priority', key: false, quality: 'Passed' },
+        { field: 'region', type: 'STRING', desc: 'Region', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v2.5.3', sla: 'P1 · 1h', sensitivity: 'Confidential', retention: 'Forever' },
+      description: 'Customer SLA commitments and priority master data.'
+    },
+    {
+      id: 'ds_lh_009', name: 'Network Mileage Matrix', enName: 'network_mileage_matrix', type: 'File',
+      source: 'S3 · mileage_matrix_2026.parquet',
+      owner: { name: 'Wei Zhang', color: '#0E9AA7' },
+      lastUpdated: ISO(60), freq: 'Weekly', status: 'online', validation: 'Passed', usage: 315600,
+      apps: ['LH Planner'],
+      schema: [
+        { field: 'city_pair', type: 'STRING', desc: 'City pair', key: true, quality: 'Passed' },
+        { field: 'distance_km', type: 'INT', desc: 'Distance (km)', key: false, quality: 'Passed' },
+        { field: 'drive_hours', type: 'FLOAT', desc: 'Drive time (hours)', key: false, quality: 'Passed' },
+        { field: 'toll_road', type: 'BOOLEAN', desc: 'Toll road', key: false, quality: 'Passed' }
+      ],
+      meta: { version: 'v3.2.0', sla: 'P2 · 1w', sensitivity: 'Internal', retention: '90 days' },
+      description: 'Network-wide mileage and drive-time matrix across city pairs.'
+    },
+    {
+      id: 'ds_lh_010', name: 'Driver Availability', enName: 'driver_availability', type: 'API',
+      source: 'REST API · https://internal/driver/availability',
+      owner: { name: 'Rizky Pratama', color: '#5B8DEF' },
+      lastUpdated: ISO(7200), freq: 'Hourly', status: 'offline', validation: 'Not configured', usage: 98400,
+      apps: ['LH Copilot'],
+      schema: [
+        { field: 'driver_id', type: 'STRING', desc: 'Driver ID', key: true, quality: 'Not configured' },
+        { field: 'available_from', type: 'TIMESTAMP', desc: 'Available from', key: false, quality: 'Not configured' },
+        { field: 'available_to', type: 'TIMESTAMP', desc: 'Available to', key: false, quality: 'Not configured' },
+        { field: 'shift', type: 'STRING', desc: 'Shift', key: false, quality: 'Not configured' }
+      ],
+      meta: { version: 'v1.1.0', sla: 'P1 · 1h', sensitivity: 'Internal', retention: '30 days' },
+      description: 'Driver shift availability time windows.'
+    }
+  ],
+
+  validationRules: [
+    { id: 'RULE-1001', dsId: 'ds_lh_001', name: 'route_id not-null check', field: 'route_id', type: 'Not null', threshold: '100%', severity: 'High', enabled: true, lastResult: 'Passed', lastRun: ISO(2) },
+    { id: 'RULE-1002', dsId: 'ds_lh_001', name: 'origin_dest uniqueness', field: 'origin_dest', type: 'Unique', threshold: '100%', severity: 'High', enabled: true, lastResult: 'Passed', lastRun: ISO(2) },
+    { id: 'RULE-1003', dsId: 'ds_lh_002', name: 'Capacity value range', field: 'capacity_units', type: 'Range', threshold: '[0, 100000]', severity: 'Medium', enabled: true, lastResult: 'Passed', lastRun: ISO(5) },
+    { id: 'RULE-1004', dsId: 'ds_lh_004', name: 'Forecast row-count threshold', field: '(whole table)', type: 'Row count', threshold: '≥ 100,000', severity: 'High', enabled: true, lastResult: 'Failed', lastRun: ISO(42) },
+    { id: 'RULE-1005', dsId: 'ds_lh_007', name: 'Cost value range', field: 'cost_per_km', type: 'Range', threshold: '[0, 500]', severity: 'Medium', enabled: true, lastResult: 'Failed', lastRun: ISO(180) },
+    { id: 'RULE-1006', dsId: 'ds_lh_008', name: 'SLA freshness', field: 'updated_at', type: 'Freshness', threshold: '≤ 24h', severity: 'High', enabled: true, lastResult: 'Passed', lastRun: ISO(12) },
+    { id: 'RULE-1007', dsId: 'ds_lh_009', name: 'city_pair uniqueness', field: 'city_pair', type: 'Unique', threshold: '100%', severity: 'Medium', enabled: true, lastResult: 'Passed', lastRun: ISO(60) },
+    { id: 'RULE-1008', dsId: 'ds_lh_006', name: 'Plate number regex', field: 'plate_no', type: 'Regex', threshold: '^[A-Z]{1,2}\\d{4}$', severity: 'Medium', enabled: true, lastResult: 'Passed', lastRun: ISO(7) },
+    { id: 'RULE-1009', dsId: 'ds_lh_003', name: 'vehicle_id not-null', field: 'vehicle_id', type: 'Not null', threshold: '100%', severity: 'High', enabled: false, lastResult: 'Not run', lastRun: ISO(180) },
+    { id: 'RULE-1010', dsId: 'ds_lh_010', name: 'driver_id not-null', field: 'driver_id', type: 'Not null', threshold: '100%', severity: 'High', enabled: true, lastResult: 'Not run', lastRun: ISO(7200) },
+    { id: 'RULE-1011', dsId: 'ds_lh_005', name: 'Departure time freshness', field: 'departure_time', type: 'Freshness', threshold: '≤ 7d', severity: 'Medium', enabled: false, lastResult: 'Not run', lastRun: ISO(2880) },
+    { id: 'RULE-1012', dsId: 'ds_lh_004', name: 'forecast_date not-null', field: 'forecast_date', type: 'Not null', threshold: '100%', severity: 'Medium', enabled: true, lastResult: 'Failed', lastRun: ISO(42) }
+  ],
+
+  validationJobs: [
+    { id: 'VALIDATE-JOB-01', name: 'Linehaul route rule validation', dsId: 'ds_lh_001', ruleCount: 2, schedule: 'Every 5 min (0/5 * * * *)', lastRun: ISO(2), duration: '3.2s', rowsChecked: 1204000, rowsFailed: 0, result: 'Passed', passRate: 100, nextRun: ISO(-3) },
+    { id: 'VALIDATE-JOB-02', name: 'Capacity data validation', dsId: 'ds_lh_002', ruleCount: 1, schedule: 'Hourly (0 * * * *)', lastRun: ISO(5), duration: '8.1s', rowsChecked: 342000, rowsFailed: 0, result: 'Passed', passRate: 99.8, nextRun: ISO(-55) },
+    { id: 'VALIDATE-JOB-03', name: 'Fleet master data validation', dsId: 'ds_lh_003', ruleCount: 1, schedule: 'Daily 02:00 (0 2 * * *)', lastRun: ISO(18), duration: '45s', rowsChecked: 12000, rowsFailed: 0, result: 'Running', passRate: null, nextRun: ISO(-3) },
+    { id: 'VALIDATE-JOB-04', name: 'Volume forecast validation', dsId: 'ds_lh_004', ruleCount: 2, schedule: 'Hourly (0 * * * *)', lastRun: ISO(42), duration: '2m 40s', rowsChecked: 1780000, rowsFailed: 3245, result: 'Failed', passRate: 82.4, nextRun: ISO(-18) },
+    { id: 'VALIDATE-JOB-05', name: 'Cost master data validation', dsId: 'ds_lh_007', ruleCount: 1, schedule: 'Daily 03:00 (0 3 * * *)', lastRun: ISO(180), duration: '12s', rowsChecked: 8000, rowsFailed: 120, result: 'Failed', passRate: 96.2, nextRun: ISO(-45) },
+    { id: 'VALIDATE-JOB-06', name: 'SLA master data validation', dsId: 'ds_lh_008', ruleCount: 1, schedule: 'Hourly (0 * * * *)', lastRun: ISO(12), duration: '6.4s', rowsChecked: 150000, rowsFailed: 0, result: 'Passed', passRate: 100, nextRun: ISO(-48) },
+    { id: 'VALIDATE-JOB-07', name: 'Mileage matrix validation', dsId: 'ds_lh_009', ruleCount: 1, schedule: 'Weekly Mon 04:00 (0 4 * * 1)', lastRun: ISO(60), duration: '3m 0s', rowsChecked: 45000000, rowsFailed: 0, result: 'Passed', passRate: 99.9, nextRun: ISO(-6000) },
+    { id: 'VALIDATE-JOB-08', name: 'Vendor truck pool validation', dsId: 'ds_lh_006', ruleCount: 1, schedule: 'Every 5 min (0/5 * * * *)', lastRun: ISO(7), duration: '2.1s', rowsChecked: 5000, rowsFailed: 0, result: 'Passed', passRate: 100, nextRun: ISO(-2) }
+  ],
+
+  tickets: [
+    {
+      id: 'TKT-2043', title: 'Customer SLA Master Freshness Alert', dsId: 'ds_lh_008', priority: 'High', assignee: 'Sofia Lim',
+      status: 'Open', creator: 'System', createdAt: ISO(20), updatedAt: ISO(20), resolutionNote: '',
+      timeline: [
+        { time: ISO(20), actor: 'System', text: 'Ticket auto-created (freshness check near threshold)' },
+        { time: ISO(20), actor: 'System', text: 'Auto-assigned to Sofia Lim' }
+      ],
+      comments: []
+    },
+    {
+      id: 'TKT-2042', title: 'Fix Volume Forecast Row-count Validation Failure', dsId: 'ds_lh_004', priority: 'High', assignee: 'Marcus Tan',
+      status: 'Open', creator: 'Huaian', createdAt: ISO(40), updatedAt: ISO(40), resolutionNote: '',
+      timeline: [
+        { time: ISO(40), actor: 'Huaian', text: 'Ticket created (from alert ALT-3041)' },
+        { time: ISO(38), actor: 'System', text: 'Auto-assigned to Marcus Tan' }
+      ],
+      comments: [
+        { author: 'Marcus Tan', time: ISO(30), text: 'Traced to delayed upstream order data, verifying now.' }
+      ]
+    },
+    {
+      id: 'TKT-2041', title: 'Handle Driver Availability API Outage', dsId: 'ds_lh_010', priority: 'Medium', assignee: 'Rizky Pratama',
+      status: 'In Progress', creator: 'Huaian', createdAt: ISO(5700), updatedAt: ISO(1500), resolutionNote: '',
+      timeline: [
+        { time: ISO(5700), actor: 'Huaian', text: 'Ticket created (from alert ALT-3044)' },
+        { time: ISO(5600), actor: 'System', text: 'Auto-assigned to Rizky Pratama' },
+        { time: ISO(1500), actor: 'Rizky Pratama', text: 'Status changed to In Progress' }
+      ],
+      comments: [
+        { author: 'Rizky Pratama', time: ISO(1500), text: 'API vendor is under maintenance; recovery expected within 12h.' }
+      ]
+    },
+    {
+      id: 'TKT-2040', title: 'Route Cost Value Range Anomaly', dsId: 'ds_lh_007', priority: 'Medium', assignee: 'Qiang Wang',
+      status: 'In Progress', creator: 'Huaian', createdAt: ISO(180), updatedAt: ISO(120), resolutionNote: '',
+      timeline: [
+        { time: ISO(180), actor: 'Huaian', text: 'Ticket created (from alert ALT-3042)' },
+        { time: ISO(160), actor: 'System', text: 'Auto-assigned to Qiang Wang' },
+        { time: ISO(120), actor: 'Qiang Wang', text: 'Status changed to In Progress' }
+      ],
+      comments: [
+        { author: 'Qiang Wang', time: ISO(120), text: 'Contacted Finance to confirm the cost table definition; correction pending.' }
+      ]
+    },
+    {
+      id: 'TKT-2039', title: 'Linehaul Trip Schedule Update SLA Overdue', dsId: 'ds_lh_005', priority: 'Medium', assignee: 'Xiang Li',
+      status: 'Resolved', creator: 'Huaian', createdAt: ISO(1400), updatedAt: ISO(360), resolutionNote: 'Operations manually updated the latest trip sheet.',
+      timeline: [
+        { time: ISO(1400), actor: 'Huaian', text: 'Ticket created (from alert ALT-3043)' },
+        { time: ISO(1300), actor: 'System', text: 'Auto-assigned to Xiang Li' },
+        { time: ISO(500), actor: 'Xiang Li', text: 'Status changed to In Progress' },
+        { time: ISO(360), actor: 'Xiang Li', text: 'Status changed to Resolved · Operations manually updated the latest trip sheet.' }
+      ],
+      comments: [
+        { author: 'Xiang Li', time: ISO(400), text: 'Updated the Google Sheet to the latest trips.' }
+      ]
+    },
+    {
+      id: 'TKT-2038', title: 'Volume Forecast Upstream Delay Degraded', dsId: 'ds_lh_004', priority: 'Low', assignee: 'Marcus Tan',
+      status: 'Closed', creator: 'Huaian', createdAt: ISO(1500), updatedAt: ISO(600), resolutionNote: 'Upstream OMS data recovered; no action needed.',
+      timeline: [
+        { time: ISO(1500), actor: 'Huaian', text: 'Ticket created (from alert ALT-3045)' },
+        { time: ISO(1400), actor: 'System', text: 'Auto-assigned to Marcus Tan' },
+        { time: ISO(700), actor: 'Marcus Tan', text: 'Status changed to In Progress' },
+        { time: ISO(650), actor: 'Marcus Tan', text: 'Status changed to Resolved · Upstream OMS data recovered.' },
+        { time: ISO(600), actor: 'Huaian', text: 'Status changed to Closed' }
+      ],
+      comments: []
+    }
+  ]
+};
+
+/* =====================================================================
+   3. Runtime state
+   ===================================================================== */
+var L1_LABEL = 'Middle-Mile Optimization';
+
+/* Level-2 menu: the modules of the Middle-Mile Optimization suite.
+   status: 'live' = page exists in this demo, 'pending' = module link not
+   provided yet (placeholder page). */
+var MODULES = [
+  { key: 'lh-planner',  label: 'LH Planner',                 icon: 'calendar',   status: 'pending', desc: 'LH trip & vendor/truck master schedule' },
+  { key: 'lh-copilot',  label: 'LH Copilot',                 icon: 'activity',   status: 'live',    desc: 'Same-day / intra-day auto dispatcher' },
+  { key: 'network-opt', label: 'Network Optimization Toolbox', icon: 'branch',   status: 'pending', desc: 'Sortation & linehaul routing optimization' },
+  { key: 'simulation',  label: 'Simulation Analysis',        icon: 'playCircle', status: 'pending', desc: 'End-to-end network simulation and what-if analysis' },
+  { key: 'datagov',     label: 'Data Gov',                   icon: 'shield',     status: 'live',    desc: 'Dataset governance, validation rules and issue tickets' }
+];
+function moduleByKey(k) {
+  for (var i = 0; i < MODULES.length; i++) if (MODULES[i].key === k) return MODULES[i];
+  return null;
+}
+
+var state = {
+  route: 'datagov',
+  navOpen: true,
+  dsSearch: '',
+  dsStatus: '',
+  detail: { dsId: null, tab: 'overview' },
+  ticketFilter: { status: '' },
+  selectedTicket: null,
+  currentTicket: null
+};
+
+/* =====================================================================
+   4. Data access helpers
+   ===================================================================== */
+function getDs(id) {
+  for (var i = 0; i < DATA.dataSources.length; i++) if (DATA.dataSources[i].id === id) return DATA.dataSources[i];
+  return null;
+}
+function rulesFor(dsId) { return DATA.validationRules.filter(function (r) { return r.dsId === dsId; }); }
+function jobsFor(dsId) { return DATA.validationJobs.filter(function (j) { return j.dsId === dsId; }); }
+function latestJob(dsId) {
+  var list = jobsFor(dsId);
+  return list.length ? list[0] : null;
+}
+function nextRuleId() {
+  var max = 1000;
+  DATA.validationRules.forEach(function (r) { var n = parseInt(r.id.split('-')[1], 10); if (n > max) max = n; });
+  return 'RULE-' + (max + 1);
+}
+function nextJobId() {
+  var max = 0;
+  DATA.validationJobs.forEach(function (j) { var n = parseInt(j.id.split('-')[2], 10); if (n > max) max = n; });
+  return 'VALIDATE-JOB-' + pad2(max + 1);
+}
+function nextTicketId() {
+  var max = 2041;
+  DATA.tickets.forEach(function (t) { var n = parseInt(t.id.split('-')[1], 10); if (n > max) max = n; });
+  return 'TKT-' + (max + 1);
+}
+
+/* =====================================================================
+   5. Sidebar / breadcrumb / routing
+   ===================================================================== */
+function renderSidebar() {
+  var h = '';
+  h += '<div class="sb-brand">' +
+    '<div class="sb-glyph">S</div>' +
+    '<div><div class="sb-name">Shopee</div><div class="sb-sub">Logistics · Ops Workspace</div></div>' +
+    '</div>';
+
+  h += '<div class="sb-nav">';
+  // Level 1
+  h += '<button class="nav-l1' + (state.navOpen ? '' : ' collapsed') + '" data-nav-toggle aria-expanded="' + (state.navOpen ? 'true' : 'false') + '">' +
+    '<span class="nav-icon">' + ic('layers', 15) + '</span><span>' + esc(L1_LABEL) + '</span>' +
+    '<span class="nav-chev">' + ic('chevDown', 14) + '</span></button>';
+  // Level 2
+  if (state.navOpen) {
+    h += '<div class="nav-l2-group">' + MODULES.map(function (m) {
+      var active = state.route === m.key || (m.key === 'datagov' && state.route === 'dsdetail');
+      return '<div class="nav-l2' + (active ? ' active' : '') + '" data-nav="' + m.key + '" title="' + esc(m.desc) + '">' +
+        '<span class="nav-icon">' + ic(m.icon, 14) + '</span><span class="nav-label">' + esc(m.label) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  h += '</div>';
+
+  h += '<div class="sb-foot">' + avatar('Huaian', '#8B4A2B', 28) +
+    '<div><div class="sb-foot-name">Huaian</div><div class="sb-foot-meta">Admin · Lv4</div></div></div>';
+  $('#sidebar').innerHTML = h;
+}
+
+function breadcrumbFor() {
+  if (state.route === 'dsdetail') {
+    var ds = getDs(state.detail.dsId);
+    return [
+      { label: L1_LABEL, nav: 'datagov' },
+      { label: 'Data Gov', nav: 'datagov' },
+      { label: 'Datasets', nav: 'datagov' },
+      { label: ds ? ds.name : 'Dataset detail' }
+    ];
+  }
+  var m = moduleByKey(state.route) || moduleByKey('datagov');
+  return [{ label: L1_LABEL, nav: 'datagov' }, { label: m.label }];
+}
+
+function renderBreadcrumb() {
+  var parts = breadcrumbFor();
+  var h = '';
+  for (var i = 0; i < parts.length; i++) {
+    if (i > 0) h += '<span class="sep">/</span>';
+    if (parts[i].nav) h += '<button class="bc-link" data-nav="' + parts[i].nav + '">' + esc(parts[i].label) + '</button>';
+    else h += '<span class="current">' + esc(parts[i].label) + '</span>';
+  }
+  $('#breadcrumb').innerHTML = h;
+}
+
+function renderTopbarExtra() {
+  var el = $('#topbar-extra');
+  if (!el) return;
+  if (state.route !== 'datagov' && state.route !== 'dsdetail') { el.innerHTML = ''; return; }
+  var ext = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+  el.innerHTML = '<a class="topbar-link" href="user-flow.html" target="_blank" rel="noopener">User Flow' + ext + '</a>' +
+    '<a class="topbar-link" href="architecture.html" target="_blank" rel="noopener">Architecture' + ext + '</a>';
+}
+
+function navigate(route) {
+  state.route = route;
+  render();
+}
+
+/* =====================================================================
+   6. Render entry
+   ===================================================================== */
+function render() {
+  renderSidebar();
+  renderBreadcrumb();
+  renderTopbarExtra();
+  closeDrawer();
+  var r = state.route;
+  if (r === 'lh-copilot') renderCopilot();
+  else if (r === 'lh-planner' || r === 'network-opt' || r === 'simulation') renderModuleOrPending(r);
+  else if (r === 'dsdetail') renderDetailPage();
+  else renderDataGov();
+}
+
+/* =====================================================================
+   7. Data Gov — single page: KPI band first, then tickets (left) and
+      datasets (right). Clicking a ticket traces the affected dataset.
+   ===================================================================== */
+function chipHTML(text, tone) {
+  return '<span class="kpi-chip ' + (tone || 'st-neutral') + '"><span class="dot"></span>' + esc(text) + '</span>';
+}
+function kpiCard(k) {
+  return '<div class="kpi-card">' +
+    (k.accent ? '<span class="kc-accent" style="background:' + k.accent + '"></span>' : '') +
+    '<div class="kpi-top"><div class="kpi-label">' + esc(k.label) + '</div>' + (k.chip ? chipHTML(k.chip[0], k.chip[1]) : '') + '</div>' +
+    '<div class="kpi-value"><b>' + esc(k.value) + '</b>' + (k.unit ? '<span>' + esc(k.unit) + '</span>' : '') + '</div>' +
+    '<div class="kpi-sub">' + k.sub + '</div></div>';
+}
+function tinyBadge(map, key) {
+  var m = map[key] || { label: key, cls: 'b-neutral' };
+  return '<span class="badge badge-sm ' + m.cls + '">' + esc(m.label) + '</span>';
+}
+function appTagsSmall(apps) {
+  var short = { 'Network Optimization Toolbox': 'Network Opt.' };
+  return '<div class="ds-apps">' + (apps || []).map(function (a) {
+    return '<span class="ds-app">' + esc(short[a] || a) + '</span>';
+  }).join('') + '</div>';
+}
+
+function renderDataGov() {
+  var ds = DATA.dataSources;
+  var online = ds.filter(function (d) { return d.status === 'online'; }).length;
+  var offline = ds.filter(function (d) { return d.status === 'offline'; }).length;
+  var abnormal = ds.filter(function (d) { return d.status === 'bug' || d.status === 'degraded'; }).length;
+  var openTickets = DATA.tickets.filter(function (t) { return t.status === 'Open' || t.status === 'In Progress' || t.status === 'Validating'; }).length;
+  var done = DATA.validationJobs.filter(function (j) { return j.result !== 'Running'; });
+  var pass = done.filter(function (j) { return j.result === 'Passed'; }).length;
+  var passRate = done.length ? Math.round(pass / done.length * 100) : 0;
+
+  var appSet = {};
+  ds.forEach(function (d) { (d.apps || []).forEach(function (a) { appSet[a] = 1; }); });
+  var appCount = Object.keys(appSet).length;
+  var kpis = [
+    { label: 'Datasets', value: ds.length, unit: 'tracked', chip: ['All sources', 'st-neutral'], sub: 'Consumed by ' + appCount + ' upstream middle-mile products' },
+    { label: 'Online', value: online, chip: ['Healthy', 'st-ok'], sub: Math.round(online / ds.length * 100) + '% of the catalog refreshing on time', accent: 'var(--color-success)' },
+    { label: 'Offline', value: offline, chip: ['Needs attention', 'st-neutral'], sub: 'No refresh beyond the expected frequency', accent: offline ? 'var(--color-grey-5)' : '' },
+    { label: 'Data issues', value: abnormal, chip: ['Bug / Degraded', 'st-bad'], sub: 'Can block downstream plan generation', accent: 'var(--color-error)' },
+    { label: 'Open tickets', value: openTickets, chip: ['Auto-assigned', 'st-warn'], sub: 'Raised by the validation engine to the owner PIC', accent: 'var(--color-info2)' },
+    { label: 'Validation pass rate', value: passRate + '%', chip: ['Today', 'st-ok'], sub: 'Passed ' + pass + ' / ' + done.length + ' scheduled runs today', accent: 'var(--color-success)' }
+  ];
+
+  $('#content').innerHTML =
+    '<div class="ph">' +
+      '<div><div class="ph-title">Data Governance</div>' +
+      '<div class="ph-desc">One control plane for every dataset the middle-mile products consume — status, owner PIC, validation results and the tickets raised when data breaks an upstream product. Select a ticket to trace the dataset behind it.</div></div>' +
+    '</div>' +
+    '<div class="kpi-row">' + kpis.map(kpiCard).join('') + '</div>' +
+    '<div class="gov-grid">' +
+      '<section class="panel" id="tickets-panel">' + ticketsPanelHTML() + '</section>' +
+      '<section class="panel" id="datasets-panel">' + datasetsPanelHTML() + '</section>' +
+    '</div>';
+}
+
+/* ---- Tickets panel (left) ---- */
+function ticketItemsHTML() {
+  var f = state.ticketFilter;
+  var list = DATA.tickets.filter(function (t) { return !f.status || t.status === f.status; });
+  if (!list.length) return '<div class="empty" style="padding:24px">No tickets for this filter</div>';
+  return list.map(function (t) {
+    var d = getDs(t.dsId);
+    var p = findPerson(t.assignee);
+    var sel = state.selectedTicket === t.id;
+    return '<div class="tk-item' + (sel ? ' sel' : '') + '" data-action="select-ticket" data-id="' + t.id + '">' +
+      '<div class="tk-top"><span class="tk-id">' + esc(t.id) + '</span><span class="spacer" style="flex:1"></span>' +
+      tinyBadge(PRI, t.priority) + tinyBadge(TSTATUS, t.status) + '</div>' +
+      '<div class="tk-title">' + esc(t.title) + '</div>' +
+      '<div class="tk-meta">' + avatar(t.assignee, p.color, 16) + '<span>' + esc(t.assignee) + '</span>' +
+      '<span class="tk-ds">' + esc(d ? d.name : t.dsId) + '</span>' +
+      '<span class="tk-when">' + esc(timeAgo(t.updatedAt)) + '</span></div></div>';
+  }).join('');
+}
+
+function ticketsPanelHTML() {
+  var f = state.ticketFilter;
+  var open = DATA.tickets.filter(function (t) { return t.status === 'Open' || t.status === 'In Progress' || t.status === 'Validating'; }).length;
+  var stOpts = [{ v: '', l: 'All status' }, { v: 'Open', l: 'Open' }, { v: 'In Progress', l: 'In Progress' },
+    { v: 'Validating', l: 'Validating' }, { v: 'Resolved', l: 'Resolved' }, { v: 'Closed', l: 'Closed' }];
+  return '<div class="panel-head">' +
+    '<span class="panel-title">Tickets</span><span class="panel-count">' + open + ' open</span>' +
+    '<span class="spacer"></span>' +
+    selectWrap('data-filter="ticket-status"', stOpts, f.status, 'input-sm') +
+    '</div>' +
+    '<div class="tk-list" id="ticket-list">' + ticketItemsHTML() + '</div>' +
+    '<div class="gov-foot">' + ic('zap', 12) + ' Created and assigned automatically by the validation engine</div>';
+}
+
+/* ---- Datasets panel (right) ---- */
+function datasetsTableHTML() {
+  var selT = null;
+  for (var i = 0; i < DATA.tickets.length; i++) if (DATA.tickets[i].id === state.selectedTicket) selT = DATA.tickets[i];
+  var selDs = selT ? getDs(selT.dsId) : null;
+  var q = state.dsSearch.toLowerCase();
+  var list = DATA.dataSources.filter(function (d) {
+    if (state.dsStatus && d.status !== state.dsStatus) return false;
+    if (q && (d.name + ' ' + d.id + ' ' + d.enName + ' ' + d.owner.name).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+  var rows = list.map(function (d) {
+    var hl = selDs && selDs.id === d.id;
+    return '<tr' + (hl ? ' class="hl"' : '') + ' data-ds-row="' + d.id + '">' +
+      '<td><div class="ds-name">' + esc(d.name) + '</div><div class="ds-id">' + esc(d.id) + ' · ' + esc(d.type) + '</div></td>' +
+      '<td><span class="owner-cell-sm">' + avatar(d.owner.name, d.owner.color, 20) + esc(d.owner.name) + '</span></td>' +
+      '<td>' + tinyBadge(STATUS, d.status) + '</td>' +
+      '<td>' + tinyBadge(VALID, d.validation) + '</td>' +
+      '<td class="col-apps">' + appTagsSmall(d.apps) + '</td>' +
+      '<td style="text-align:right">' + fmtNum(d.usage) + '<div class="ds-id" style="text-align:right">times</div></td>' +
+      '<td style="color:var(--color-grey-5)"><span style="display:flex">' + ic('chevRight', 14) + '</span></td>' +
+      '</tr>';
+  }).join('');
+  if (!rows) rows = '<tr><td colspan="7"><div class="empty">No datasets match the filter</div></td></tr>';
+  return '<table class="gov-table"><thead><tr>' +
+    '<th>Dataset</th><th>Owner PIC</th><th>Status</th><th>Validation</th><th class="col-apps">Consumed by</th><th style="text-align:right">Usage</th><th></th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function affectedBannerHTML() {
+  var selT = null;
+  for (var i = 0; i < DATA.tickets.length; i++) if (DATA.tickets[i].id === state.selectedTicket) selT = DATA.tickets[i];
+  if (!selT) return '<div style="padding:11px 14px 0;font-size:11.5px;color:var(--color-grey-7)">Select a ticket on the left to trace the dataset it affects.</div>';
+  var d = getDs(selT.dsId);
+  if (!d) return '';
+  return '<div class="affected">' +
+    '<div class="af-row"><span class="af-dot"></span>' +
+    '<span class="af-k">' + esc(selT.id) + '</span>' +
+    '<span class="af-name">' + esc(d.name) + '</span>' + tinyBadge(STATUS, d.status) + tinyBadge(VALID, d.validation) +
+    '<span class="af-meta">' + esc(d.owner.name) + ' · ' + esc(d.freq) + ' · ' + fmtNum(d.usage) + ' uses</span>' +
+    '<span style="flex:1"></span>' +
+    '<button class="link" style="font-size:11.5px" data-action="view-ds" data-id="' + d.id + '">Open dataset →</button>' +
+    '<button class="link" style="font-size:11.5px" data-action="open-ticket" data-id="' + selT.id + '">Ticket</button>' +
+    '</div></div>';
+}
+
+function datasetsPanelHTML() {
+  var statusOpts = [{ v: '', l: 'All status' }, { v: 'online', l: 'Online' }, { v: 'offline', l: 'Offline' },
+    { v: 'degraded', l: 'Degraded' }, { v: 'bug', l: 'Bug' }];
+  return '<div class="panel-head">' +
+    '<span class="panel-title">Datasets</span><span class="panel-count">' + DATA.dataSources.length + '</span>' +
+    '<span class="spacer"></span>' +
+    '<span class="search-wrap">' + ic('search', 13) + '<input class="input input-sm" style="width:176px;padding-left:26px" data-input="ds-search" placeholder="Search dataset" value="' + esc(state.dsSearch) + '"></span>' +
+    selectWrap('data-filter="ds-status"', statusOpts, state.dsStatus, 'input-sm') +
+    '</div>' +
+    '<div id="ds-affected-region">' + affectedBannerHTML() + '</div>' +
+    '<div class="panel-body"><div id="ds-table-region">' + datasetsTableHTML() + '</div></div>';
+}
+
+function refreshTicketPanels() {
+  var tp = $('#tickets-panel');
+  if (tp) tp.innerHTML = ticketsPanelHTML();
+  var af = $('#ds-affected-region');
+  if (af) af.innerHTML = affectedBannerHTML();
+  var tr = $('#ds-table-region');
+  if (tr) tr.innerHTML = datasetsTableHTML();
+}
+
+function selectTicket(id) {
+  state.selectedTicket = (state.selectedTicket === id) ? null : id;
+  refreshTicketPanels();
+  if (state.selectedTicket) {
+    var row = $('#ds-table-region tr.hl');
+    if (row && row.scrollIntoView) row.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+/* =====================================================================
+   7b. LH Copilot — static replica of the module dashboard tab
+   ===================================================================== */
+function renderCopilot() {
+  var kpis = [
+    { label: 'Backlog vs scheduled', value: '92.6k', unit: '/ 1.08M', chip: ['SHORT', 'st-bad'], accent: 'var(--color-error)',
+      sub: 'Short <b>463</b> on the next wave ≈ <b>1</b> truck · <b>3</b> lane(s) over capacity',
+      subs: [['LMH', '50,836'], ['InterSOC', '35,647']] },
+    { label: 'Staging occupancy', value: '4.6%', unit: 'of staging', chip: ['OK', 'st-ok'],
+      sub: 'Origin staging area · threshold <b>95%</b>',
+      subs: [['LMH', '2.5 pp'], ['InterSOC', '1.8 pp']] },
+    { label: 'D0 planned loading', value: '85.6%', unit: 'planned trips', chip: ['OK', 'st-ok'],
+      sub: 'Threshold <b>70%</b> · <b>0</b> lane(s) below it',
+      subs: [['LMH', '85.8%'], ['InterSOC', '85.0%']] }
+  ];
+  var kpiHtml = '<div class="kpi-3">' + kpis.map(function (k) {
+    return '<div class="kpi-card">' + (k.accent ? '<span class="kc-accent" style="background:' + k.accent + '"></span>' : '') +
+      '<div class="kpi-top"><div class="kpi-label">' + esc(k.label) + '</div>' + chipHTML(k.chip[0], k.chip[1]) + '</div>' +
+      '<div class="kpi-value"><b>' + esc(k.value) + '</b><span>' + esc(k.unit) + '</span></div>' +
+      '<div class="kpi-sub" style="margin-top:7px;padding-top:0">' + k.sub + '</div>' +
+      '<div class="kc-subs">' + k.subs.map(function (r) { return '<div class="kc-sub-row"><span>' + esc(r[0]) + '</span><b>' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
+      '</div>';
+  }).join('') + '</div>';
+
+  var waves = ['18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
+  var lanes = [
+    { name: 'SOC-SP2 → SP8', vals: [0.62, 0.71, 0.88, 0.94, 0.81, 0.55] },
+    { name: 'SOC-SP2 → BA2', vals: [0.48, 0.55, 0.63, 0.71, 0.68, 0.44] },
+    { name: 'SOC-SP2 → GO1', vals: [0.31, 0.38, 0.52, 0.61, 0.57, 0.40] },
+    { name: 'SOC-SP2 → RJ1', vals: [0.72, 0.86, 0.98, 1.02, 0.90, 0.60] },
+    { name: 'LMH shuttle', vals: [0.25, 0.33, 0.47, 0.55, 0.49, 0.28] },
+    { name: 'InterSOC transfer', vals: [0.58, 0.66, 0.79, 0.88, 0.83, 0.52] }
+  ];
+  function tone(v) {
+    if (v > 0.95) return 'background:var(--color-error);color:#fff';
+    if (v > 0.85) return 'background:#FFD6DB;color:#C01733';
+    if (v > 0.7) return 'background:var(--color-warning-bg);color:#B87D00';
+    return 'background:var(--color-grey-2);color:var(--color-grey-7)';
+  }
+  var heat = '<div class="heat">' + '<div></div>' +
+    waves.map(function (w) { return '<div class="heat-h">' + esc(w) + '</div>'; }).join('') +
+    lanes.map(function (l) {
+      return '<div class="heat-rl" title="' + esc(l.name) + '">' + esc(l.name) + '</div>' +
+        l.vals.map(function (v) {
+          return '<div class="heat-cell" style="' + tone(v) + '">' + Math.round(v * 100) + '%</div>';
+        }).join('');
+    }).join('') + '</div>';
+
+  var cases = [
+    { id: 'CASE-8841', title: 'SOC-SP2 → SOC-RJ1 · 21:00 wave over capacity', meta: 'Recommend +1 vendor truck · CPT 22:40', tag: 'Recommend', tone: 'st-warn' },
+    { id: 'CASE-8839', title: 'SOC-SP2 → SOC-SP8 · 463 parcels short on next wave', meta: 'Recommend move to the 22:00 wave · CPT 23:10', tag: 'Recommend', tone: 'st-warn' },
+    { id: 'CASE-8836', title: 'LMH shuttle · driver not confirmed for D0', meta: 'Pending confirmation with vendor · CPT 20:05', tag: 'Pending', tone: 'st-info' },
+    { id: 'CASE-8833', title: 'InterSOC transfer · truck booked', meta: 'Booked · plate B 8842 XT · CPT 22:20', tag: 'Booked', tone: 'st-ok' }
+  ];
+  var casesHtml = cases.map(function (c) {
+    return '<div class="case-item"><div style="flex:1;min-width:0">' +
+      '<div class="case-id">' + esc(c.id) + '</div>' +
+      '<div class="case-title">' + esc(c.title) + '</div>' +
+      '<div class="case-meta">' + esc(c.meta) + '</div>' +
+      '</div>' + chipHTML(c.tag, c.tone) + '</div>';
+  }).join('');
+
+  var chartPanel = '<div class="panel">' +
+    '<div class="panel-head"><span class="panel-title">Dock occupancy by lane</span><span class="panel-count">next 6 waves</span>' +
+    '<span class="spacer"></span><span class="cp-note">Share of dock capacity reserved</span></div>' +
+    '<div style="padding:14px 16px 14px"><div style="overflow-x:auto">' + heat + '</div>' +
+    '<div class="legend">' +
+    '<span><span class="lg-sw" style="background:var(--color-grey-2)"></span>OK &lt; 70%</span>' +
+    '<span><span class="lg-sw" style="background:var(--color-warning-bg)"></span>Watch 70–85%</span>' +
+    '<span><span class="lg-sw" style="background:#FFD6DB"></span>High 85–95%</span>' +
+    '<span><span class="lg-sw" style="background:var(--color-error)"></span>Over capacity &gt; 95%</span>' +
+    '</div></div></div>';
+
+  var casePanel = '<div class="panel">' +
+    '<div class="panel-head"><span class="panel-title">LH cases next to outbound lanes</span><span class="panel-count">' + cases.length + '</span></div>' +
+    '<div style="padding:2px 15px 8px">' + casesHtml + '</div></div>';
+
+  var alertCard = '<div class="alert-card">' +
+    '<div class="alert-ic">!</div>' +
+    '<div style="flex:1;min-width:0">' +
+    '<div class="alert-line1"><span class="alert-title">Constraint data error</span>' +
+    '<span class="alert-strong">12 errors</span>' +
+    '<span class="alert-meta">Reported 14:12 · latest validation run rejected the workbook</span></div>' +
+    '<div class="alert-desc">The decision model reads 9 constraint tables. The latest validation rejected the workbook, so no new plan can be generated until the data owner fixes the source. A ticket is already open and auto-assigned — open it in Data Gov to trace the dataset.</div>' +
+    '<div class="alert-actions">' +
+    '<button class="btn btn-ghost btn-sm" data-action="goto-ticket" data-id="TKT-2042">' + ic('ticket', 13) + ' Open TKT-2042 in Data Gov</button>' +
+    '<button class="btn btn-ghost btn-sm" data-action="apply-bridge">' + ic('zap', 13) + ' Apply bridge params</button>' +
+    '</div></div></div>';
+
+  $('#content').innerHTML =
+    '<div class="cp-head">' +
+      '<div><div class="ph-title">Dashboard · SOC-SP2</div>' +
+      '<div class="ph-desc">LH cases next to every outbound lane · click a case to locate it on the dock chart · times in BRT</div></div>' +
+      '<div class="cp-filters">' +
+        '<div class="cp-filter"><label>Operating day</label><span class="select-wrap"><select class="input input-sm" style="width:238px"><option>05/11 06:00 → 05/12 06:00</option><option>05/10 06:00 → 05/11 06:00</option></select>' + ic('chevDown', 14) + '</span></div>' +
+        '<div class="cp-filter"><label>Station</label><span class="select-wrap"><select class="input input-sm" style="width:116px"><option>SOC-SP2</option><option>SOC-RJ1</option><option>SOC-BA2</option></select>' + ic('chevDown', 14) + '</span></div>' +
+      '</div>' +
+    '</div>' +
+    alertCard + kpiHtml +
+    '<div class="heat-wrap">' + chartPanel + casePanel + '</div>';
+}
+
+/* =====================================================================
+   7c. Module placeholders (link not provided yet)
+   ===================================================================== */
+/* A module page can be contributed by its owner as modules/<name>.html and
+   registered in modules/registry.js — no change to this file needed. */
+function renderModuleOrPending(key) {
+  var reg = window.MODULE_PAGES || {};
+  var src = reg[key];
+  if (!src) { renderPendingPage(key); return; }
+  var m = moduleByKey(key) || {};
+  $('#content').innerHTML = '<iframe class="module-frame" src="' + esc(src) + '" title="' + esc(m.label || key) + '"></iframe>';
+}
+
+function renderPendingPage(key) {
+  var m = moduleByKey(key);
+  var scope = {
+    'lh-planner': [
+      'Trip master schedule — departure time, vehicle type and lane per trip',
+      'Vendor & truck master data with contract terms and capacity',
+      'Plan vs actual comparison for the running planning cycle'
+    ],
+    'network-opt': [
+      'Sortation path design per center (inbound → outbound dock)',
+      'Linehaul routing optimization across the whole network',
+      'Scenario comparison against the current baseline network'
+    ],
+    'simulation': [
+      'End-to-end network simulation, first mile to last mile',
+      'What-if scenarios on capacity, volume and schedule changes',
+      'Global-optimality check before a plan is released'
+    ]
+  }[key] || [];
+  $('#content').innerHTML = '<div class="pending-wrap">' +
+    '<div class="pending-ic">' + ic(m.icon, 26) + '</div>' +
+    '<div class="pending-title">' + esc(m.label) + '</div>' +
+    '<div class="pending-desc">' + esc(m.desc) + '<br>The module UI will be embedded here once its link is available.</div>' +
+    '<div class="pending-note">' + ic('clock', 12) + ' Awaiting module link</div>' +
+    '<div class="pending-card"><h4>What this page will cover</h4><ul>' +
+    scope.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') +
+    '</ul></div></div>';
+}
+
+/* =====================================================================
+   9. Data Source Detail（§3.3）
+   ===================================================================== */
+function openDetail(id, tab) {
+  state.detail.dsId = id;
+  state.detail.tab = tab || 'overview';
+  state.route = 'dsdetail';
+  render();
+}
+
+function renderDetailPage() {
+  var ds = getDs(state.detail.dsId);
+  if (!ds) { navigate('datagov'); return; }
+  var tab = state.detail.tab;
+  var tabs = [['overview', 'Overview'], ['rules', 'Validation Rules'], ['history', 'Run History'], ['config', 'Config']];
+
+  var header =
+    '<div class="back-row"><button class="bc-link" data-nav="datagov">' + ic('back', 16) + ' Back to Data Gov</button></div>' +
+    '<div class="detail-head">' +
+    '<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">' +
+    '<div>' +
+    '<div class="detail-title-row"><span class="detail-name">' + esc(ds.name) + '</span>' + badge(STATUS, ds.status) + typeTag(ds.type) + appTags(ds.apps) + '</div>' +
+    '<div class="detail-desc">' + esc(ds.id) + ' · ' + esc(ds.enName) + ' — ' + esc(ds.description) + '</div>' +
+    '</div>' +
+    '<div class="detail-actions"><button class="btn btn-ghost" data-action="edit-ds" data-id="' + ds.id + '">' + ic('edit', 14) + ' Edit</button><button class="btn btn-primary" data-action="run-validation" data-id="' + ds.id + '">' + ic('play', 14) + ' Run Validation</button></div>' +
+    '</div></div>';
+
+  var tabBar = '<div class="tabs">' + tabs.map(function (t) {
+    return '<button class="tab' + (tab === t[0] ? ' active' : '') + '" data-action="detail-tab" data-tab="' + t[0] + '">' + t[1] + '</button>';
+  }).join('') + '</div>';
+
+  var body = '';
+  if (tab === 'overview') body = detailOverviewHTML(ds);
+  else if (tab === 'rules') body = detailRulesHTML(ds);
+  else if (tab === 'history') body = detailHistoryHTML(ds);
+  else if (tab === 'config') body = detailConfigHTML(ds);
+
+  $('#content').innerHTML = header + tabBar + body;
+}
+
+function detailOverviewHTML(ds) {
+  var meta = [
+    ['Owner PIC', personChip(ds.owner.name)],
+    ['Source Connection', esc(ds.source)],
+    ['Last Updated', esc(timeAgo(ds.lastUpdated)) + ' · ' + esc(fmtAbs(ds.lastUpdated))],
+    ['Update Frequency', esc(ds.freq)],
+    ['Usage Count', fmtNum(ds.usage) + ' times'],
+    ['Data Version', esc(ds.meta.version)],
+    ['SLA', esc(ds.meta.sla)],
+    ['Sensitivity', esc(ds.meta.sensitivity)],
+    ['Retention', esc(ds.meta.retention)]
+  ];
+  var metaHtml = '<div class="card" style="margin-bottom:20px"><div class="card-title">Metadata</div>' +
+    meta.map(function (m) { return '<div class="info-row"><span class="k">' + m[0] + '</span><span class="v">' + m[1] + '</span></div>'; }).join('') +
+    '</div>';
+
+  var schemaRows = ds.schema.map(function (f) {
+    return '<tr><td>' + (f.key ? '<span class="cell-primary">' + esc(f.field) + '</span> <span class="badge b-info">PK</span>' : esc(f.field)) + '</td>' +
+      '<td><span class="tag-type">' + esc(f.type) + '</span></td><td class="cell-muted">' + esc(f.desc) + '</td>' +
+      '<td>' + (f.key ? 'Yes' : 'No') + '</td><td>' + badge(VALID, f.quality) + '</td></tr>';
+  }).join('');
+
+  return metaHtml +
+    '<div class="table-card"><div class="card-title" style="padding:16px 20px 0;margin-bottom:8px">Field Schema</div>' +
+    '<table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Description</th><th>Primary Key</th><th>Latest Quality</th></tr></thead><tbody>' + schemaRows + '</tbody></table></div>';
+}
+
+function detailRulesHTML(ds) {
+  var list = rulesFor(ds.id);
+  var rows = list.map(function (r) {
+    return '<tr><td>' + esc(r.id) + '</td><td>' + esc(r.name) + '</td><td><span class="tag-type">' + esc(r.field) + '</span></td><td>' + esc(r.type) + '</td>' +
+      '<td><code>' + esc(r.threshold) + '</code></td><td>' + badge(SEV, r.severity) + '</td>' +
+      '<td>' + switchHTML(r.id, r.enabled) + '</td>' +
+      '<td>' + badge(RULESULT, r.lastResult) + '</td><td class="cell-muted">' + esc(timeAgo(r.lastRun)) + '</td>' +
+      '<td><div class="actions-cell"><button class="link" data-action="edit-rule" data-id="' + r.id + '">Edit</button><button class="link" data-action="del-rule" data-id="' + r.id + '">Delete</button></div></td></tr>';
+  }).join('');
+  if (!rows) rows = '<tr><td colspan="10"><div class="empty">No validation rules yet</div></td></tr>';
+  return '<div class="page-head"><div><div class="page-title">Validation Rules</div><div class="page-desc">Validation rules for ' + esc(ds.name) + ' (' + list.length + ')</div></div><button class="btn btn-primary" data-action="open-add-rule" data-ds="' + ds.id + '">' + ic('plus', 16) + ' Add Rule</button></div>' +
+    '<div class="table-card"><table class="data-table"><thead><tr><th>Rule ID</th><th>Rule Name</th><th>Field</th><th>Type</th><th>Threshold</th><th>Severity</th><th>Enabled</th><th>Latest Result</th><th>Last Run</th><th>Actions</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function detailHistoryHTML(ds) {
+  var list = jobsFor(ds.id);
+  var rows = list.map(function (j) {
+    return '<tr><td>' + esc(fmtAbs(j.lastRun)) + '</td>' +
+      '<td>' + (j.schedule.indexOf('Manual') === 0 ? 'Manual' : 'Scheduled') + '</td>' +
+      '<td>' + j.ruleCount + '</td><td>' + fmtNum(j.rowsChecked) + '</td><td>' + fmtNum(j.rowsFailed) + '</td>' +
+      '<td>' + esc(j.duration) + '</td><td>' + badge(VALID, j.result) + '</td></tr>';
+  }).join('');
+  if (!rows) rows = '<tr><td colspan="7"><div class="empty">No run history</div></td></tr>';
+  return '<div class="table-card"><div class="card-title" style="padding:16px 20px 0;margin-bottom:8px">Run History</div>' +
+    '<table class="data-table"><thead><tr><th>Time</th><th>Trigger</th><th>Rules</th><th>Rows Checked</th><th>Rows Failed</th><th>Duration</th><th>Result</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function detailConfigHTML(ds) {
+  var freqOpts = ['Every 5 min', 'Hourly', 'Daily', 'Weekly'];
+  var slaOpts = ['P1 · 5min', 'P1 · 1h', 'P2 · 24h', 'P2 · 1w'];
+  var sensOpts = ['Internal', 'Confidential', 'Sensitive', 'Public'];
+  var retOpts = ['Forever', '30 days', '90 days', '180 days', '365 days'];
+  function opts(arr) { return arr.map(function (v) { return { v: v, l: v }; }); }
+
+  ds.timeline = ds.timeline || [];
+  var tl = ds.timeline.slice().sort(function (a, b) { return new Date(b.time) - new Date(a.time); });
+  var tlHtml = tl.map(function (e) {
+    return '<div class="tl-item"><span class="tl-dot"></span><div class="tl-text">' + esc(e.text) + '</div><div class="tl-meta">' + esc(e.actor) + ' · ' + esc(fmtAbs(e.time)) + '</div></div>';
+  }).join('') || '<div class="cell-muted" style="font-size:13px">No change history</div>';
+
+  return '<div class="card" style="max-width:1024px"><div class="card-title">Config</div>' +
+    '<div class="cfg-cols">' +
+    '<div class="cfg-form">' +
+    '<div class="form-item"><label class="form-label">Owner PIC</label>' + personSelect('cfg-pic', ds.owner.name) + '</div>' +
+    '<div class="form-grid">' +
+    '<div class="form-item"><label class="form-label">Update Frequency</label>' + selectWrap('id="cfg-freq"', opts(freqOpts), ds.freq, '') + '</div>' +
+    '<div class="form-item"><label class="form-label">Data Version</label><input id="cfg-version" class="input" style="width:100%" value="' + esc(ds.meta.version) + '"></div>' +
+    '<div class="form-item"><label class="form-label">SLA</label>' + selectWrap('id="cfg-sla"', opts(slaOpts), ds.meta.sla, '') + '</div>' +
+    '<div class="form-item"><label class="form-label">Retention</label>' + selectWrap('id="cfg-retention"', opts(retOpts), ds.meta.retention, '') + '</div>' +
+    '<div class="form-item"><label class="form-label">Data Sensitivity</label>' + selectWrap('id="cfg-sensitivity"', opts(sensOpts), ds.meta.sensitivity, '') + '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">' +
+    '<button class="btn btn-ghost" data-action="cancel-config">Cancel</button><button class="btn btn-primary" data-action="save-config" data-id="' + ds.id + '">' + ic('save', 14) + ' Save</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="cfg-audit">' +
+    '<div class="card-title" style="margin-bottom:12px">Change Log (Audit)</div>' +
+    '<div class="timeline">' + tlHtml + '</div>' +
+    '</div>' +
+    '</div></div>';
+}
+
+/* =====================================================================
+   12. Ticket drawer + status flow
+   ===================================================================== */
+function drawerHTML(t) {
+  var ds = getDs(t.dsId);
+  var order = ['Open', 'In Progress', 'Validating', 'Resolved', 'Closed'];
+  var idx = order.indexOf(t.status);
+  var steps = order.map(function (s, i) {
+    var done = (t.status === 'Closed' && i <= idx) || i < idx;
+    var active = i === idx && t.status !== 'Closed';
+    return '<div class="step ' + (done ? 'done' : '') + (active ? 'active' : '') + '"><span class="step-dot"></span><span class="step-label">' + esc(s) + '</span></div>';
+  }).join('<div class="step-line"></div>');
+
+  var actionHtml = '';
+  if (t.status === 'Open') actionHtml = '<button class="btn btn-primary" data-action="advance-ticket" data-id="' + t.id + '">Start → In Progress</button>';
+  else if (t.status === 'In Progress') actionHtml = '<div class="resolve-box"><input id="resolution-note" class="input" placeholder="Resolution note (optional)"><button class="btn btn-primary" data-action="advance-ticket" data-id="' + t.id + '">Mark Resolved → Validate</button></div>';
+  else if (t.status === 'Validating') actionHtml = '<span class="closed-note">Validating — system re-running validation rules…</span>';
+  else if (t.status === 'Resolved') actionHtml = '<button class="btn btn-primary" data-action="advance-ticket" data-id="' + t.id + '">Close Ticket → Closed</button>';
+  else actionHtml = '<span class="closed-note">Ticket is closed</span>';
+
+  var timeline = t.timeline.slice().sort(function (a, b) { return new Date(a.time) - new Date(b.time); }).map(function (tl) {
+    return '<div class="tl-item"><span class="tl-dot"></span><div class="tl-text">' + esc(tl.text) + '</div><div class="tl-meta">' + esc(tl.actor) + ' · ' + esc(fmtAbs(tl.time)) + '</div></div>';
+  }).join('');
+
+  var comments = t.comments.map(function (c) {
+    return '<div class="comment-item"><div><span class="comment-author">' + esc(c.author) + '</span><span class="comment-time">' + esc(fmtAbs(c.time)) + '</span></div><div class="comment-text">' + esc(c.text) + '</div></div>';
+  }).join('') || '<div class="cell-muted" style="font-size:13px;margin-bottom:8px">No comments yet</div>';
+
+  return '<div class="drawer-head"><div>' +
+    '<div class="drawer-title">' + esc(t.id) + ' · ' + esc(t.title) + '</div>' +
+    '<div class="drawer-badges">' + badge(TSTATUS, t.status) + badge(PRI, t.priority) + '</div>' +
+    '</div><button class="icon-btn" data-action="drawer-close">' + ic('close', 16) + '</button></div>' +
+    '<div class="drawer-body">' +
+    '<div class="drawer-section"><div class="drawer-section-title">Basic Info</div>' +
+    '<div class="info-row"><span class="k">Dataset</span><span class="v">' + esc(ds ? ds.name : t.dsId) + ' (' + esc(t.dsId) + ')</span></div>' +
+    '<div class="info-row"><span class="k">Assignee</span><span class="v">' + personChip(t.assignee) + '</span></div>' +
+    '<div class="info-row"><span class="k">Creator</span><span class="v">' + esc(t.creator) + '</span></div>' +
+    '<div class="info-row"><span class="k">Created At</span><span class="v">' + esc(fmtAbs(t.createdAt)) + '</span></div>' +
+    '<div class="info-row"><span class="k">Updated At</span><span class="v">' + esc(fmtAbs(t.updatedAt)) + '</span></div>' +
+    (t.resolutionNote ? '<div class="info-row"><span class="k">Resolution Note</span><span class="v">' + esc(t.resolutionNote) + '</span></div>' : '') +
+    '</div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Status Flow</div><div class="flow">' + steps + '</div>' + actionHtml + '</div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Timeline</div><div class="timeline">' + timeline + '</div></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Comments</div>' + comments +
+    '<div class="comment-input"><input id="comment-text" class="input" placeholder="Add a comment, press Enter to send"><button class="btn btn-primary" data-action="add-comment" data-id="' + t.id + '">' + ic('send', 14) + ' Send</button></div></div>' +
+    '</div>';
+}
+
+function openTicketDrawer(id) {
+  var t = DATA.tickets.find(function (x) { return x.id === id; });
+  if (!t) return;
+  state.currentTicket = id;
+  renderDrawerInto(t);
+  $('#drawer-root').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function refreshTicketDrawer(id) {
+  var t = DATA.tickets.find(function (x) { return x.id === id; });
+  if (!t) return;
+  var d = $('#drawer-root .drawer');
+  if (d) d.innerHTML = drawerHTML(t);
+}
+function renderDrawerInto(t) {
+  $('#drawer-root').innerHTML = '<div class="drawer-mask"></div><div class="drawer">' + drawerHTML(t) + '</div>';
+}
+function closeDrawer() {
+  state.currentTicket = null;
+  var root = $('#drawer-root');
+  root.classList.remove('open');
+  if (!currentModal) document.body.style.overflow = '';
+  setTimeout(function () { if (!$('#drawer-root').classList.contains('open')) $('#drawer-root').innerHTML = ''; }, 300);
+}
+
+function advanceTicket(id) {
+  var t = DATA.tickets.find(function (x) { return x.id === id; });
+  if (!t) return;
+  var order = ['Open', 'In Progress', 'Validating', 'Resolved', 'Closed'];
+  var idx = order.indexOf(t.status);
+  if (idx < 0 || idx >= order.length - 1) return;
+  var next = order[idx + 1];
+  var note = '';
+  if (t.status === 'In Progress') {
+    var el = $('#resolution-note');
+    note = el ? el.value.trim() : '';
+    if (note) t.resolutionNote = note;
+  }
+  t.status = next;
+  t.updatedAt = new Date().toISOString();
+  var text;
+  if (next === 'Validating') text = 'Status changed to Validating' + (note ? ' · ' + note : '') + ' — system validation triggered';
+  else if (next === 'Resolved') text = 'Status changed to Resolved';
+  else text = 'Status changed to ' + next;
+  t.timeline.push({ time: t.updatedAt, actor: 'Huaian', text: text });
+  toast('Ticket ' + id + ' status updated to ' + next);
+  refreshTicketPanels();
+  refreshTicketDrawer(id);
+  if (next === 'Validating') {
+    setTimeout(function () {
+      var tk = DATA.tickets.find(function (x) { return x.id === id; });
+      if (!tk || tk.status !== 'Validating') return;
+      var now = new Date().toISOString();
+      tk.status = 'Resolved';
+      tk.updatedAt = now;
+      tk.timeline.push({ time: now, actor: 'System', text: 'Validation passed — issue confirmed resolved' });
+      toast('Ticket ' + id + ' validation passed → Resolved');
+      refreshTicketPanels();
+      refreshTicketDrawer(id);
+    }, 2500);
+  }
+}
+
+function addComment(id) {
+  var t = DATA.tickets.find(function (x) { return x.id === id; });
+  if (!t) return;
+  var el = $('#comment-text');
+  var txt = el ? el.value.trim() : '';
+  if (!txt) return;
+  var now = new Date().toISOString();
+  t.comments.push({ author: 'Huaian', time: now, text: txt });
+  t.timeline.push({ time: now, actor: 'Huaian', text: 'Comment added: ' + txt });
+  t.updatedAt = now;
+  if (el) el.value = '';
+  refreshTicketPanels();
+  refreshTicketDrawer(id);
+}
+
+/* =====================================================================
+   15. Modal / Drawer / Toast basics
+   ===================================================================== */
+var currentModal = null;
+
+function toast(msg, type) {
+  type = type || 'success';
+  var root = $('#toast-root');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  var iconName = type === 'success' ? 'check' : (type === 'error' ? 'warn' : 'alert');
+  t.innerHTML = ic(iconName, 16) + '<span>' + esc(msg) + '</span>';
+  root.appendChild(t);
+  requestAnimationFrame(function () { t.classList.add('show'); });
+  setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 300); }, 3000);
+}
+
+function openModal(opts) {
+  var root = $('#modal-root');
+  var mask = document.createElement('div');
+  mask.className = 'modal-mask';
+  mask.innerHTML = '<div class="modal" style="' + (opts.width ? 'max-width:' + opts.width + ';width:100%' : '') + '">' +
+    '<div class="modal-head"><div class="modal-title">' + (opts.title || '') + '</div><button class="icon-btn" data-action="modal-close">' + ic('close', 16) + '</button></div>' +
+    '<div class="modal-body">' + (opts.body || '') + '</div>' +
+    (opts.footer ? '<div class="modal-foot">' + opts.footer + '</div>' : '') +
+    '</div>';
+  root.appendChild(mask);
+  mask.addEventListener('click', function (e) { if (e.target === mask) closeModal(); });
+  var btn = mask.querySelector('[data-action="modal-close"]');
+  if (btn) btn.addEventListener('click', closeModal);
+  currentModal = mask;
+  document.body.style.overflow = 'hidden';
+  return mask;
+}
+function closeModal() {
+  if (currentModal) { currentModal.remove(); currentModal = null; }
+  if (!$('#drawer-root').classList.contains('open')) document.body.style.overflow = '';
+}
+
+/* ---- Data source edit modal ---- */
+function openDataSourceModal(editId) {
+  var editing = getDs(editId);
+  if (!editing) return;
+  var typeOpts = [{ v: 'DB', l: 'DB' }, { v: 'API', l: 'API' }, { v: 'File', l: 'File' }, { v: 'Sheet', l: 'Sheet' }, { v: 'Stream', l: 'Stream' }];
+  var freqOpts = [{ v: 'Every 5 min', l: 'Every 5 min' }, { v: 'Hourly', l: 'Hourly' }, { v: 'Daily', l: 'Daily' }, { v: 'Weekly', l: 'Weekly' }];
+
+  var body =
+    '<div class="form-item"><label class="form-label">Name <span class="req">*</span></label><input id="mds-name" class="input" style="width:100%" value="' + esc(editing.name) + '" placeholder="e.g. Linehaul Network Routes"></div>' +
+    '<div class="form-grid">' +
+    '<div class="form-item"><label class="form-label">Type <span class="req">*</span></label>' + selectWrap('id="mds-type"', typeOpts, editing.type) + '</div>' +
+    '<div class="form-item"><label class="form-label">Update Frequency</label>' + selectWrap('id="mds-freq"', freqOpts, editing.freq) + '</div>' +
+    '</div>' +
+    '<div class="form-item"><label class="form-label">Source Connection</label><input id="mds-source" class="input" style="width:100%" value="' + esc(editing.source) + '" placeholder="e.g. MySQL · sg-db / table"></div>' +
+    '<div class="form-item"><label class="form-label">Owner PIC <span class="req">*</span></label>' + personSelect('mds-owner', editing.owner.name) + '</div>' +
+    '<div class="form-item"><label class="form-label">Validation Rules (add at least one if needed)</label>' +
+    '<div id="mds-rule-list"></div>' +
+    '<div class="rule-add-row"><input id="mds-rule-field" class="input" style="flex:1" placeholder="Field name">' +
+    '<select id="mds-rule-type" class="input" style="flex:1"><option>Not null</option><option>Unique</option><option>Range</option><option>Regex</option><option>Row count</option><option>Freshness</option></select>' +
+    '<input id="mds-rule-th" class="input" style="flex:1" placeholder="Threshold"><button class="btn btn-ghost" data-action="mds-add-rule">Add</button></div></div>';
+
+  var tmpRules = rulesFor(editing.id).map(function (r) { return { field: r.field, type: r.type, threshold: r.threshold }; });
+
+  openModal({
+    title: 'Edit Data Source',
+    body: body,
+    footer: '<button class="btn btn-ghost" data-action="modal-close">Cancel</button><button class="btn btn-primary" data-action="mds-submit">Save</button>'
+  });
+
+  function renderRuleChips() {
+    $('#mds-rule-list').innerHTML = tmpRules.map(function (r, i) {
+      return '<span class="rule-chip">' + esc(r.field) + ' · ' + esc(r.type) + ' ' + esc(r.threshold) + '<button class="icon-btn" style="width:16px;height:16px" data-action="mds-rm-rule" data-idx="' + i + '">' + ic('close', 12) + '</button></span>';
+    }).join('');
+  }
+  renderRuleChips();
+
+  var m = currentModal;
+  m.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-action]');
+    if (!a) return;
+    var act = a.getAttribute('data-action');
+    if (act === 'mds-add-rule') {
+      var field = $('#mds-rule-field').value.trim() || '(whole table)';
+      var type = $('#mds-rule-type').value;
+      var th = $('#mds-rule-th').value.trim() || '100%';
+      tmpRules.push({ field: field, type: type, threshold: th });
+      $('#mds-rule-field').value = ''; $('#mds-rule-th').value = '';
+      renderRuleChips();
+    } else if (act === 'mds-rm-rule') {
+      tmpRules.splice(parseInt(a.getAttribute('data-idx'), 10), 1);
+      renderRuleChips();
+    } else if (act === 'mds-submit') {
+      var name = $('#mds-name').value.trim();
+      if (!name) { toast('Please enter a data source name', 'error'); return; }
+      editing.name = name;
+      editing.type = $('#mds-type').value;
+      editing.freq = $('#mds-freq').value;
+      editing.source = $('#mds-source').value.trim() || 'Not configured';
+      var owner = findPerson($('#mds-owner').value);
+      editing.owner = { name: owner.name, color: owner.color };
+      var nowIso = new Date().toISOString();
+      tmpRules.forEach(function (r) {
+        var found = rulesFor(editing.id).some(function (er) { return er.field === r.field && er.type === r.type && er.threshold === r.threshold; });
+        if (!found) {
+          DATA.validationRules.push({ id: nextRuleId(), dsId: editing.id, name: r.field + ' ' + r.type + ' check', field: r.field, type: r.type, threshold: r.threshold, severity: 'Medium', enabled: true, lastResult: 'Not run', lastRun: nowIso });
+        }
+      });
+      DATA.validationRules = DATA.validationRules.filter(function (r) {
+        if (r.dsId !== editing.id) return true;
+        return tmpRules.some(function (tr) { return r.field === tr.field && r.type === tr.type && r.threshold === tr.threshold; });
+      });
+      toast('Data source saved');
+      closeModal();
+      render();
+    }
+  });
+}
+
+/* ---- Validation rule modal ---- */
+function openRuleModal(editId, dsId) {
+  var editing = editId ? DATA.validationRules.find(function (r) { return r.id === editId; }) : null;
+  var dsOpts = DATA.dataSources.map(function (d) { return { v: d.id, l: d.name + ' (' + d.id + ')' }; });
+  var typeOpts = ['Not null', 'Unique', 'Range', 'Regex', 'Row count', 'Freshness'].map(function (t) { return { v: t, l: t }; });
+  var sevOpts = [{ v: 'High', l: 'High' }, { v: 'Medium', l: 'Medium' }, { v: 'Low', l: 'Low' }];
+
+  var body =
+    '<div class="form-item"><label class="form-label">Dataset <span class="req">*</span></label>' + selectWrap('id="mr-ds"', dsOpts, editing ? editing.dsId : (dsId || DATA.dataSources[0].id)) + '</div>' +
+    '<div class="form-item"><label class="form-label">Rule Name <span class="req">*</span></label><input id="mr-name" class="input" style="width:100%" value="' + (editing ? esc(editing.name) : '') + '" placeholder="e.g. route_id not-null check"></div>' +
+    '<div class="form-grid">' +
+    '<div class="form-item"><label class="form-label">Field</label><input id="mr-field" class="input" style="width:100%" value="' + (editing ? esc(editing.field) : '') + '" placeholder="Field name / (whole table)"></div>' +
+    '<div class="form-item"><label class="form-label">Rule Type</label>' + selectWrap('id="mr-type"', typeOpts, editing ? editing.type : 'Not null') + '</div>' +
+    '<div class="form-item"><label class="form-label">Threshold</label><input id="mr-th" class="input" style="width:100%" value="' + (editing ? esc(editing.threshold) : '100%') + '"></div>' +
+    '<div class="form-item"><label class="form-label">Severity</label>' + selectWrap('id="mr-sev"', sevOpts, editing ? editing.severity : 'Medium') + '</div>' +
+    '</div>' +
+    '<label class="switch" style="margin-top:4px"><input id="mr-enabled" type="checkbox"' + (editing ? (editing.enabled ? ' checked' : '') : ' checked') + '><span class="slider"></span></label> <span style="font-size:14px;margin-left:8px">Enabled</span>';
+
+  openModal({
+    title: editing ? 'Edit Validation Rule' : 'New Validation Rule',
+    body: body,
+    footer: '<button class="btn btn-ghost" data-action="modal-close">Cancel</button><button class="btn btn-primary" data-action="mr-submit">' + (editing ? 'Save' : 'Create') + '</button>'
+  });
+  var m = currentModal;
+  m.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-action="mr-submit"]');
+    if (!a) return;
+    var name = $('#mr-name').value.trim();
+    if (!name) { toast('Please enter a rule name', 'error'); return; }
+    var rec = {
+      dsId: $('#mr-ds').value, name: name, field: $('#mr-field').value.trim() || '(whole table)',
+      type: $('#mr-type').value, threshold: $('#mr-th').value.trim() || '100%',
+      severity: $('#mr-sev').value, enabled: $('#mr-enabled').checked,
+      lastResult: 'Not run', lastRun: new Date().toISOString()
+    };
+    if (editing) {
+      Object.assign(editing, rec);
+      toast('Rule saved');
+    } else {
+      rec.id = nextRuleId();
+      DATA.validationRules.push(rec);
+      toast('Rule added ' + rec.id);
+    }
+    closeModal();
+    render();
+  });
+}
+
+/* ---- New ticket modal (unused; tickets are auto-generated) ---- */
+function openCreateTicketModal() {
+  var dsOpts = DATA.dataSources.map(function (d) { return { v: d.id, l: d.name + ' (' + d.id + ')' }; });
+  var prOpts = [{ v: 'High', l: 'High' }, { v: 'Medium', l: 'Medium' }, { v: 'Low', l: 'Low' }];
+  var peopleOpts = PEOPLE.map(function (p) { return { v: p.name, l: p.name }; });
+  var body =
+    '<div class="form-item"><label class="form-label">Title <span class="req">*</span></label><input id="mt-title" class="input" style="width:100%" placeholder="Ticket title"></div>' +
+    '<div class="form-grid">' +
+    '<div class="form-item"><label class="form-label">Dataset <span class="req">*</span></label>' + selectWrap('id="mt-ds"', dsOpts, DATA.dataSources[0].id) + '</div>' +
+    '<div class="form-item"><label class="form-label">Priority</label>' + selectWrap('id="mt-pri"', prOpts, 'Medium') + '</div>' +
+    '</div>' +
+    '<div class="form-item"><label class="form-label">Assignee</label>' + selectWrap('id="mt-owner"', peopleOpts, 'Lena Wang') + '</div>' +
+    '<div class="form-item"><label class="form-label">Description</label><textarea id="mt-desc" class="input" style="width:100%;min-height:72px" placeholder="Describe the issue"></textarea></div>';
+  openModal({
+    title: 'New Ticket',
+    body: body,
+    footer: '<button class="btn btn-ghost" data-action="modal-close">Cancel</button><button class="btn btn-primary" data-action="mt-submit">Create</button>'
+  });
+  var m = currentModal;
+  m.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-action="mt-submit"]');
+    if (!a) return;
+    var title = $('#mt-title').value.trim();
+    if (!title) { toast('Please enter a ticket title', 'error'); return; }
+    var dsId = $('#mt-ds').value;
+    var now = new Date().toISOString();
+    var t = {
+      id: nextTicketId(), title: title, dsId: dsId, priority: $('#mt-pri').value,
+      assignee: $('#mt-owner').value, status: 'Open', creator: 'Huaian',
+      createdAt: now, updatedAt: now, resolutionNote: '',
+      timeline: [
+        { time: now, actor: 'Huaian', text: 'Ticket created' },
+        { time: now, actor: 'System', text: 'Auto-assigned to ' + $('#mt-owner').value }
+      ],
+      comments: $('#mt-desc').value.trim() ? [{ author: 'Huaian', time: now, text: $('#mt-desc').value.trim() }] : []
+    };
+    DATA.tickets.unshift(t);
+    toast('Ticket ' + t.id + ' created');
+    closeModal();
+    render();
+  });
+}
+
+/* =====================================================================
+   16. Global event delegation
+   ===================================================================== */
+function handleAction(a) {
+  var act = a.getAttribute('data-action');
+  var id = a.getAttribute('data-id');
+  switch (act) {
+    case 'view-ds': openDetail(id); break;
+    case 'edit-ds': openDataSourceModal(id); break;
+    case 'detail-tab': state.detail.tab = a.getAttribute('data-tab'); renderDetailPage(); break;
+    case 'run-validation': runValidation(id); break;
+    case 'save-config': saveConfig(id); break;
+    case 'cancel-config': state.detail.tab = 'config'; renderDetailPage(); break;
+    case 'open-add-rule': openRuleModal(null, a.getAttribute('data-ds') || null); break;
+    case 'edit-rule': openRuleModal(id, null); break;
+    case 'del-rule': deleteRule(id); break;
+    case 'toggle-rule': toggleRule(id, a); break;
+    case 'select-ticket': selectTicket(id); break;
+    case 'goto-ticket': state.selectedTicket = id; navigate('datagov'); break;
+    case 'open-ticket': openTicketDrawer(id); break;
+    case 'drawer-close': closeDrawer(); break;
+    case 'advance-ticket': advanceTicket(id); break;
+    case 'add-comment': addComment(id); break;
+    case 'modal-close': closeModal(); break;
+    case 'apply-bridge': toast('Bridge parameters applied to the next planning run', 'info'); break;
+    default: break;
+  }
+}
+
+document.addEventListener('click', function (e) {
+  var tg = e.target.closest('[data-nav-toggle]');
+  if (tg) { state.navOpen = !state.navOpen; renderSidebar(); return; }
+  var nav = e.target.closest('[data-nav]');
+  if (nav) { navigate(nav.getAttribute('data-nav')); return; }
+  var a = e.target.closest('[data-action]');
+  if (a) { handleAction(a); return; }
+  var row = e.target.closest('[data-ds-row]');
+  if (row) { openDetail(row.getAttribute('data-ds-row')); return; }
+});
+
+// person-select custom dropdown (Owner PIC / modal owner)
+document.addEventListener('click', function (e) {
+  var trig = e.target.closest('.person-select-trigger');
+  if (trig) {
+    var wrap = trig.closest('.person-select');
+    var wasOpen = wrap.classList.contains('open');
+    closeAllPersonMenus();
+    if (!wasOpen) wrap.classList.add('open');
+    return;
+  }
+  var opt = e.target.closest('.person-option');
+  if (opt) {
+    var wrap2 = opt.closest('.person-select');
+    var pid = wrap2.getAttribute('data-person-select');
+    var name = opt.getAttribute('data-name');
+    var p = findPerson(name);
+    var input = document.getElementById(pid);
+    if (input) input.value = p.name;
+    var av = wrap2.querySelector('.person-select-avatar');
+    if (av) av.innerHTML = avatar(p.name, p.color, 20);
+    var nm = wrap2.querySelector('.person-select-name');
+    if (nm) nm.textContent = p.name;
+    $all('.person-option', wrap2).forEach(function (o) { o.classList.toggle('selected', o === opt); });
+    wrap2.classList.remove('open');
+    return;
+  }
+  if (!e.target.closest('.person-select')) closeAllPersonMenus();
+});
+
+document.addEventListener('change', function (e) {
+  var el = e.target;
+  var f = el.getAttribute('data-filter');
+  if (!f) return;
+  if (f === 'ticket-status') {
+    state.ticketFilter.status = el.value;
+    refreshTicketPanels();
+  } else if (f === 'ds-status') {
+    state.dsStatus = el.value;
+    var tr = $('#ds-table-region');
+    if (tr) tr.innerHTML = datasetsTableHTML();
+  }
+});
+
+document.addEventListener('input', function (e) {
+  var el = e.target;
+  if (el.getAttribute('data-input') === 'ds-search') {
+    state.dsSearch = el.value;
+    var tr = $('#ds-table-region');
+    if (tr) tr.innerHTML = datasetsTableHTML();
+  }
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    closeAllPersonMenus();
+    if (currentModal) closeModal();
+    else if (state.currentTicket) closeDrawer();
+  }
+  if (e.key === 'Enter' && e.target && e.target.id === 'comment-text' && state.currentTicket) {
+    addComment(state.currentTicket);
+  }
+});
+
+/* =====================================================================
+   17. Interaction implementations
+   ===================================================================== */
+function runValidation(dsId) {
+  var ds = getDs(dsId);
+  var rules = rulesFor(dsId);
+  var id = nextJobId();
+  DATA.validationJobs.unshift({
+    id: id, name: ds.name + ' · Manual validation', dsId: dsId, ruleCount: rules.length,
+    schedule: 'Manual trigger', lastRun: new Date().toISOString(), duration: '—',
+    rowsChecked: 0, rowsFailed: 0, result: 'Running', passRate: null, nextRun: null
+  });
+  toast('Validation job ' + id + ' triggered');
+  // Demo: auto-mark as passed after 2.5s
+  setTimeout(function () {
+    var j = DATA.validationJobs.find(function (x) { return x.id === id; });
+    if (j) {
+      j.result = 'Passed'; j.passRate = 100; j.duration = '2.8s';
+      j.rowsChecked = Math.floor(100000 + Math.random() * 900000); j.rowsFailed = 0;
+    }
+    if (state.route === 'dsdetail') renderDetailPage();
+    else render();
+  }, 2500);
+}
+
+function saveConfig(dsId) {
+  var ds = getDs(dsId);
+  ds.timeline = ds.timeline || [];
+  var oldName = ds.owner.name;
+  var pic = $('#cfg-pic').value;
+  var p = findPerson(pic);
+  var now = new Date().toISOString();
+  var newFreq = $('#cfg-freq').value;
+  var newVersion = $('#cfg-version').value.trim() || ds.meta.version;
+  var newSla = $('#cfg-sla').value;
+  var newRetention = $('#cfg-retention').value;
+  var newSensitivity = $('#cfg-sensitivity').value;
+  if (oldName !== p.name) ds.timeline.push({ time: now, actor: 'Huaian', text: 'Owner PIC changed: ' + oldName + ' → ' + p.name });
+  if (ds.freq !== newFreq) ds.timeline.push({ time: now, actor: 'Huaian', text: 'Update frequency changed: ' + ds.freq + ' → ' + newFreq });
+  if (ds.meta.version !== newVersion) ds.timeline.push({ time: now, actor: 'Huaian', text: 'Data version changed: ' + ds.meta.version + ' → ' + newVersion });
+  if (ds.meta.sla !== newSla) ds.timeline.push({ time: now, actor: 'Huaian', text: 'SLA changed: ' + ds.meta.sla + ' → ' + newSla });
+  if (ds.meta.retention !== newRetention) ds.timeline.push({ time: now, actor: 'Huaian', text: 'Retention changed: ' + ds.meta.retention + ' → ' + newRetention });
+  if (ds.meta.sensitivity !== newSensitivity) ds.timeline.push({ time: now, actor: 'Huaian', text: 'Sensitivity changed: ' + ds.meta.sensitivity + ' → ' + newSensitivity });
+  ds.owner = { name: p.name, color: p.color };
+  ds.freq = newFreq;
+  ds.meta.version = newVersion;
+  ds.meta.sla = newSla;
+  ds.meta.retention = newRetention;
+  ds.meta.sensitivity = newSensitivity;
+  toast('Saved');
+  renderDetailPage();
+}
+
+function deleteRule(id) {
+  DATA.validationRules = DATA.validationRules.filter(function (r) { return r.id !== id; });
+  toast('Rule deleted');
+  render();
+}
+
+function toggleRule(id, checkbox) {
+  var r = DATA.validationRules.find(function (x) { return x.id === id; });
+  if (r) {
+    r.enabled = checkbox.checked;
+    toast(r.enabled ? 'Rule enabled' : 'Rule disabled', 'info');
+  }
+}
+
+function setAlertStatus(id, status, label) {
+  /* unused — tickets are auto-generated, no manual alert flow */
+}
+
+/* =====================================================================
+   18. Boot
+   ===================================================================== */
+render();
+
+</script>
+</body>
+</html>

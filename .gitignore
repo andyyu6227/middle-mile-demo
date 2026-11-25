@@ -1,0 +1,9 @@
+.DS_Store
+*.log
+
+# Superseded iterations of the demo, kept on disk but not published
+versions.html
+v2-catalog.html
+v3-observability.html
+v4-governance.html
+index.full.html

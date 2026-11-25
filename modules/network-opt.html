@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Optimization Toolbox · Middle-Mile Optimization</title>
+<!--
+  ============================================================================
+  Network Optimization Toolbox  —  module page (owner: TBD — Network Optimization PM)
+  ============================================================================
+  HOW THIS FILE WORKS
+  * It is rendered inside the suite shell (index.html) via an <iframe>, using
+    the entry in modules/registry.js:
+        'network-opt': 'modules/network-opt.html'
+  * It also opens fine on its own (double-click) — no build step, no CDN.
+  * To design this module: replace the .wrap content below with your page.
+    Keep it self-contained (inline CSS/JS, no external fonts or scripts) so the
+    demo still works offline and on GitHub Pages.
+  * Design tokens are copied below so you can style freely without touching
+    other modules. Brand #EE4D2D · text #303844 · muted #7E8692.
+  * UI copy is English only.
+  ============================================================================
+-->
+<style>
+  :root {
+    --brand: #EE4D2D; --brand-bg: #FFF5F0;
+    --success: #1CC461; --success-bg: #ECFFF1;
+    --error: #F32345; --error-bg: #FFF0F0;
+    --warning: #FFB014; --warning-bg: #FFF8DB;
+    --info: #3274F7; --info-bg: #F0F7FF;
+    --info2: #FF831D; --info2-bg: #FEECE1;
+    --g8: #303844; --g7: #7E8692; --g6: #959BA4; --g5: #B5BBC6;
+    --g4: #E2E6EC; --g3: #ECF0F4; --g2: #F5F6F9; --g1: #F9FAFC;
+    --sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); font-size: 14px; color: var(--g8);
+    background: var(--g2); -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 26px 28px 48px; }
+  .page-title { font-size: 20px; font-weight: 600; letter-spacing: -.1px; }
+  .page-desc { font-size: 12.5px; color: var(--g7); margin-top: 5px; line-height: 1.55; }
+  .head { margin-bottom: 20px; }
+
+  .empty-state {
+    background: #fff; border: 1px solid var(--g4); border-radius: 4px;
+    padding: 44px 32px 36px; text-align: center;
+  }
+  .es-ic {
+    width: 52px; height: 52px; border-radius: 13px; background: var(--brand-bg);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .es-ic svg { color: var(--brand); }
+  .es-title { font-size: 17px; font-weight: 600; }
+  .es-desc { font-size: 12.5px; color: var(--g7); margin-top: 7px; line-height: 1.6; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px;
+    border-radius: 10px; font-size: 10.5px; font-weight: 600;
+    background: var(--info2-bg); color: var(--info2); margin-top: 14px;
+  }
+  .chip::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+  .card {
+    background: #fff; border: 1px solid var(--g4); border-radius: 4px; padding: 14px 16px;
+    text-align: left;
+  }
+  .card-k {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .55px;
+    color: var(--g7); margin-bottom: 6px;
+  }
+  .card-v { font-size: 13px; font-weight: 600; color: var(--g8); }
+  .card-d { font-size: 11px; color: var(--g7); margin-top: 5px; line-height: 1.5; }
+  @media (max-width: 900px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <div class="page-title">Network Optimization Toolbox</div>
+      <div class="page-desc">Sortation & linehaul routing optimization across the middle-mile network.</div>
+    </div>
+
+    <div class="empty-state">
+      <div class="es-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="es-title">Network Optimization Toolbox</div>
+      <div class="es-desc">Design sortation paths and linehaul routing, then compare the result against the current baseline.<br>The module UI will be embedded here once its link is available.</div>
+      <div class="chip">Awaiting module link</div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="card-k">Sortation paths</div><div class="card-v">Design</div><div class="card-d">Inbound to outbound dock assignment per sortation center.</div></div>
+      <div class="card"><div class="card-k">Linehaul routing</div><div class="card-v">Optimization</div><div class="card-d">Route selection, frequency and consolidation across the network.</div></div>
+      <div class="card"><div class="card-k">Scenario compare</div><div class="card-v">Decision</div><div class="card-d">Cost / transit time deltas against the running baseline network.</div></div>
+    </div>
+  </div>
+</body>
+</html>
