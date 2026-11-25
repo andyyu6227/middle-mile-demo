@@ -2,7 +2,8 @@
 
 一个自包含的 HTML demo：中程优化套件（Middle-Mile Optimization）下 5 个模块的统一入口，含 Data Gov 与 LH Copilot 的可用页面，其余模块留了可替换的页面骨架，方便各模块 owner 各自设计后并进同一个 demo。
 
-**在线地址**：`https://<org-or-user>.github.io/<repo>/`（首次部署后自动生成，见下方「部署」）
+**在线地址**：https://andyyu6227.github.io/middle-mile-demo/
+**仓库**：https://github.com/andyyu6227/middle-mile-demo （public）
 
 ## 里面有什么
 
@@ -66,12 +67,20 @@ python3 -m http.server 8000
 - 字体：Roboto + 系统字体栈；字号：页面标题 20/600，卡片标题 13.5/600，正文 12.5，辅助 11。
 - 版式参考 Data Gov 页：顶部 KPI 卡片带 → 下方「左列表 / 右明细」两栏。LH Copilot 页可参考 KPI 三卡 + 图表 + 列表的结构。
 
+## 团队协作
+
+仓库是 public，所以：
+
+- **只想看**：直接打开上面的在线地址，不需要账号。
+- **想改自己负责的模块**：fork 仓库 → 改 `modules/<你的模块>.html`（必要时在 `modules/registry.js` 加一行）→ 提 PR；或者让 owner 把你加成 collaborator，直接推分支。
+- 改之前先 `git pull`，`modules/` 下每个文件都是独立所有人的，冲突面只有 `registry.js` 那一行。
+
 ## 部署
 
-仓库已带 `.github/workflows/pages.yml`，需要一次性在仓库设置里把 Pages 的 Source 改成 **GitHub Actions**：
+Pages 走分支发布，已经开好：
 
 ```
-Settings → Pages → Build and deployment → Source: GitHub Actions
+Settings → Pages → Build and deployment → Source: Deploy from a branch → main / (root)
 ```
 
-之后每次 push 到 `main` 都会自动发布，地址在 Actions 的 deploy 步骤里（`https://<owner>.github.io/<repo>/`）。
+push 到 `main` 后 GitHub 会自动重建，1 分钟左右生效。改完本地自测（双击 `index.html`）再推。
