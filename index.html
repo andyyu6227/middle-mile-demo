@@ -310,7 +310,7 @@ table.data-table { width: 100%; border-collapse: collapse; }
 .closed-note { font-size: 13px; color: var(--color-grey-6); }
 
 /* Toast */
-#toast-root { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+#toast-root { position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .toast { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); font-size: 14px; box-shadow: var(--shadow-dropdown); opacity: 0; transform: translateY(-8px); transition: var(--transition-slow); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast span { color: var(--color-grey-8); }
@@ -423,16 +423,19 @@ table.data-table { width: 100%; border-collapse: collapse; }
    and shell.py (top bar controls). The station workspace below it is the
    real component (modules/lh-copilot-workspace.html).
    ===================================================================== */
-.cp-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
-.cp-title { font: 600 18px/1.15 var(--font-family); color: var(--color-grey-8); }
-.cp-subtitle { font: 400 12px/1.35 var(--font-family); color: var(--color-grey-7); margin-top: 5px; max-width: 760px; }
-.cp-top-r { display: flex; align-items: flex-start; gap: 10px; }
-.cp-ctl { display: flex; flex-direction: column; gap: 5px; }
-.cp-ctl-label { font: 500 10px/1 var(--font-family); letter-spacing: .5px; text-transform: uppercase; color: var(--color-grey-7); display: flex; align-items: center; gap: 5px; }
+.cp-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  padding: 0 0 16px; border-bottom: 1px solid var(--color-grey-3); margin-bottom: 18px;
+}
+.cp-title { font: 700 24px/1.2 var(--font-family); color: var(--color-grey-8); letter-spacing: -.3px; }
+.cp-subtitle { font: 400 14px/1.4 var(--font-family); color: var(--color-grey-7); margin-top: 6px; max-width: 780px; }
+.cp-top-r { display: flex; align-items: flex-end; gap: 10px; }
+.cp-ctl { display: flex; flex-direction: column; gap: 4px; }
+.cp-ctl-label { font: 400 12px/1 var(--font-family); color: var(--color-grey-7); display: flex; align-items: center; gap: 6px; }
 .cp-ctl-pill {
-  height: 34px; display: flex; align-items: center; padding: 0 12px; white-space: nowrap;
+  height: 40px; display: flex; align-items: center; padding: 0 12px; white-space: nowrap;
   border: 1px solid var(--color-grey-4); border-radius: var(--radius-lg);
-  background: var(--color-grey-1); font: 500 12.5px/1 var(--font-family); color: var(--color-grey-8);
+  background: var(--color-grey-1); font: 500 13px/1 var(--font-family); color: var(--color-grey-8);
 }
 
 /* ── Alerts card (alert_stack.py) ── */
@@ -514,7 +517,7 @@ table.data-table { width: 100%; border-collapse: collapse; }
 }
 .add-btn:hover, .add-wrap.open .add-btn { border-color: var(--color-brand); color: var(--color-brand); background: var(--color-brand-bg); }
 .add-menu {
-  position: absolute; right: 0; top: 32px; z-index: 40; min-width: 208px; padding: 4px;
+  position: absolute; right: 0; top: 34px; z-index: 40; min-width: 208px; padding: 4px;
   background: #fff; border: 1px solid var(--color-grey-4); border-radius: var(--radius-md);
   box-shadow: var(--shadow-dropdown); display: none;
 }
@@ -1360,7 +1363,7 @@ function cpChevSvg() {
   return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
 }
 function cpPinSvg() {
-  return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+  return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
 }
 
 /* Alerts card — alert_stack.py + data_alert.py, wording kept as shipped */
@@ -1550,7 +1553,11 @@ function detailOverviewHTML(ds) {
       '<td>' + (f.key ? 'Yes' : 'No') + '</td><td>' + badge(VALID, f.quality) + '</td></tr>';
   }).join('');
 
-  if (!schemaRows) schemaRows = '<tr><td colspan="5"><div class="empty">No schema registered yet — add fields when the source is connected</div></td></tr>';
+  if (!schemaRows) schemaRows = '<tr><td colspan="5"><div class="empty" style="padding:32px 24px">' +
+    '<div style="display:flex;justify-content:center;margin-bottom:10px;color:var(--color-grey-5)">' + ic('db', 26) + '</div>' +
+    '<div style="font-size:13px;color:var(--color-grey-8);font-weight:500">No schema registered yet</div>' +
+    '<div style="font-size:12px;color:var(--color-grey-7);margin-top:4px">Fields appear here as soon as the source connection is configured.</div>' +
+    '</div></td></tr>';
   return metaHtml +
     '<div class="table-card"><div class="card-title" style="padding:16px 20px 0;margin-bottom:8px">Field Schema</div>' +
     '<table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Description</th><th>Primary Key</th><th>Latest Quality</th></tr></thead><tbody>' + schemaRows + '</tbody></table></div>';
