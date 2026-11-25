@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module name · Middle-Mile Optimization</title>
+<!--
+  ============================================================================
+  MODULE PAGE TEMPLATE — Middle-Mile Optimization demo
+  ============================================================================
+  1. Copy this file to modules/<your-module>.html (e.g. modules/network-opt.html).
+  2. Fill in the page head, the KPI cards and the workspace below.
+  3. Make sure modules/registry.js points your menu key at this file.
+  4. Open ../index.html, click your module, check it, then open a PR.
+  Rules: self-contained (no CDN / external fonts / images), English UI copy,
+  content area only (the shell draws the sidebar + top bar), invented data only
+  (the repo is public), keep the file under 300KB.
+  Class names are prefixed `modt-` and scoped to this page — keep it that way.
+  ============================================================================
+-->
+<style>
+  :root {
+    --brand: #EE4D2D; --brand-hover: #FF6F47; --brand-bg: #FFF5F0;
+    --ok: #1CC461; --ok-bg: #ECFFF1; --ok-t: #0E8F45;
+    --err: #F32345; --err-bg: #FFF0F0;
+    --warn: #FFB014; --warn-bg: #FFF8DB; --warn-t: #B87D00;
+    --info: #3274F7; --info-bg: #F0F7FF;
+    --g8: #303844; --g7: #7E8692; --g6: #959BA4; --g5: #B5BBC6;
+    --g4: #E2E6EC; --g3: #ECF0F4; --g2: #F5F6F9; --g1: #F9FAFC;
+    --sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); font-size: 14px; color: var(--g8); background: var(--g2); -webkit-font-smoothing: antialiased; }
+  .modt-wrap { padding: 22px 24px 32px; max-width: 1280px; margin: 0 auto; }
+
+  /* page head */
+  .modt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .modt-title { font: 600 20px/1.2 var(--sans); color: var(--g8); }
+  .modt-desc { font: 400 12.5px/1.55 var(--sans); color: var(--g7); margin-top: 5px; max-width: 760px; }
+  .modt-actions { display: flex; gap: 8px; }
+  .modt-btn { height: 32px; padding: 0 14px; border-radius: 4px; font: 500 13px/1 var(--sans); cursor: pointer; border: 1px solid var(--g4); background: #fff; color: var(--g8); }
+  .modt-btn:hover { background: var(--g1); }
+  .modt-btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .modt-btn.primary:hover { background: var(--brand-hover); }
+
+  /* KPI band */
+  .modt-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .modt-kpi { position: relative; background: #fff; border: 1px solid var(--g4); border-radius: 4px; padding: 13px 15px; overflow: hidden; display: flex; flex-direction: column; }
+  .modt-kpi .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .modt-kpi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+  .modt-kpi-label { font: 600 10px/1.35 var(--sans); letter-spacing: .55px; text-transform: uppercase; color: var(--g7); }
+  .modt-chip { font: 600 9.5px/1 var(--sans); padding: 3px 6px; border-radius: 3px; white-space: nowrap; }
+  .modt-kpi-v { display: flex; align-items: baseline; gap: 5px; margin-top: 9px; }
+  .modt-kpi-v b { font: 600 25px/1 var(--sans); color: var(--g8); font-variant-numeric: tabular-nums; }
+  .modt-kpi-v span { font: 500 11.5px/1 var(--sans); color: var(--g7); white-space: nowrap; }
+  .modt-kpi-sub { margin-top: auto; padding-top: 8px; font: 400 10.5px/1.4 var(--sans); color: var(--g7); }
+  .modt-chip.ok { background: var(--ok-bg); color: var(--ok-t); }
+  .modt-chip.err { background: var(--err-bg); color: var(--err); }
+  .modt-chip.warn { background: var(--warn-bg); color: var(--warn-t); }
+  .modt-chip.neutral { background: var(--g2); color: var(--g7); }
+
+  /* two-column workspace */
+  .modt-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: stretch; }
+  .modt-panel { background: #fff; border: 1px solid var(--g4); border-radius: 4px; min-width: 0; display: flex; flex-direction: column; }
+  .modt-panel-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--g3); flex: none; }
+  .modt-panel-title { font: 600 13.5px/1 var(--sans); color: var(--g8); }
+  .modt-count { font: 600 10.5px/1 var(--sans); color: var(--g7); background: var(--g2); border-radius: 9px; padding: 3px 7px; }
+  .modt-spacer { flex: 1; }
+  .modt-body { flex: 1; min-height: 0; overflow: auto; }
+
+  /* list rows */
+  .modt-item { padding: 10px 12px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; }
+  .modt-item:hover { background: var(--g1); }
+  .modt-item.sel { background: var(--brand-bg); border-color: #FFD9CB; }
+  .modt-item-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .modt-item-id { font: 600 10.5px/1 var(--sans); color: var(--g7); font-variant-numeric: tabular-nums; }
+  .modt-item-title { font: 500 12.5px/1.4 var(--sans); color: var(--g8); margin-bottom: 6px; }
+  .modt-item-meta { font: 400 10.5px/1.3 var(--sans); color: var(--g6); display: flex; gap: 8px; align-items: center; }
+
+  /* table */
+  table.modt-table { width: 100%; border-collapse: collapse; }
+  .modt-table th { position: sticky; top: 0; z-index: 1; background: #fff; text-align: left;
+    font: 600 10px/1 var(--sans); letter-spacing: .5px; text-transform: uppercase; color: var(--g7);
+    padding: 9px 12px; border-bottom: 1px solid var(--g4); white-space: nowrap; }
+  .modt-table td { padding: 10px 12px; border-bottom: 1px solid var(--g3); font-size: 12px; vertical-align: middle; }
+  .modt-table tbody tr { cursor: pointer; }
+  .modt-table tbody tr:hover { background: var(--g1); }
+  .modt-table tbody tr:last-child td { border-bottom: none; }
+  .modt-cell-name { font: 500 12.5px/1.2 var(--sans); color: var(--g8); }
+  .modt-cell-sub { font: 400 10.5px/1.2 var(--sans); color: var(--g6); margin-top: 3px; }
+  .modt-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* empty state */
+  .modt-empty { padding: 32px 24px; text-align: center; }
+  .modt-empty-ic { color: var(--g5); margin-bottom: 10px; }
+  .modt-empty-t { font: 500 13px/1.2 var(--sans); color: var(--g8); }
+  .modt-empty-d { font: 400 12px/1.5 var(--sans); color: var(--g7); margin-top: 4px; }
+
+  @media (max-width: 1280px) { .modt-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 1100px) { .modt-grid { grid-template-columns: minmax(0, 1fr); } .modt-kpis { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<div class="modt-wrap">
+
+  <!-- ── 1. Page head: what this page is + the primary action ───────────── -->
+  <div class="modt-head">
+    <div>
+      <div class="modt-title">Sortation Path Designer</div>
+      <div class="modt-desc">Design the inbound → outbound dock path per sortation center, then compare it with the running baseline.</div>
+    </div>
+    <div class="modt-actions">
+      <button class="modt-btn">Export</button>
+      <button class="modt-btn primary">Run optimization</button>
+    </div>
+  </div>
+
+  <!-- ── 2. KPI band: 3-4 cards, one number each, status chip top-right ─── -->
+  <div class="modt-kpis">
+    <div class="modt-kpi">
+      <span class="accent" style="background:var(--ok)"></span>
+      <div class="modt-kpi-top">
+        <span class="modt-kpi-label">Centers covered</span>
+        <span class="modt-chip ok">ON TRACK</span>
+      </div>
+      <div class="modt-kpi-v"><b>18</b><span>of 18</span></div>
+      <div class="modt-kpi-sub">All active sortation centers have a configured path.</div>
+    </div>
+    <div class="modt-kpi">
+      <span class="accent" style="background:var(--err)"></span>
+      <div class="modt-kpi-top">
+        <span class="modt-kpi-label">Paths above dock limit</span>
+        <span class="modt-chip err">BREACH</span>
+      </div>
+      <div class="modt-kpi-v"><b>3</b><span>centers</span></div>
+      <div class="modt-kpi-sub">Peak hour inbound exceeds the dock capacity by 1-2 docks.</div>
+    </div>
+    <div class="modt-kpi">
+      <span class="accent" style="background:var(--warn)"></span>
+      <div class="modt-kpi-top">
+        <span class="modt-kpi-label">Transit time delta</span>
+        <span class="modt-chip warn">WATCH</span>
+      </div>
+      <div class="modt-kpi-v"><b>-12</b><span>min avg</span></div>
+      <div class="modt-kpi-sub">Compared with the current baseline network.</div>
+    </div>
+    <div class="modt-kpi">
+      <div class="modt-kpi-top">
+        <span class="modt-kpi-label">Scenarios saved</span>
+        <span class="modt-chip neutral">DRAFT</span>
+      </div>
+      <div class="modt-kpi-v"><b>6</b><span>versions</span></div>
+      <div class="modt-kpi-sub">Last edited 2 h ago by the network planning team.</div>
+    </div>
+  </div>
+
+  <!-- ── 3. Workspace: list on the left, detail on the right ────────────── -->
+  <div class="modt-grid">
+    <section class="modt-panel">
+      <div class="modt-panel-head">
+        <span class="modt-panel-title">Centers</span>
+        <span class="modt-count">6</span>
+        <span class="modt-spacer"></span>
+      </div>
+      <div class="modt-body" style="padding:6px">
+        <div class="modt-item sel" data-item="1">
+          <div class="modt-item-top"><span class="modt-item-id">SOC-SP2</span><span class="modt-spacer" style="flex:1"></span><span class="modt-chip err">BREACH</span></div>
+          <div class="modt-item-title">Dock 4-6 inbound bottleneck at 17:00</div>
+          <div class="modt-item-meta"><span>12 paths</span><span>·</span><span>updated 2 h ago</span></div>
+        </div>
+        <div class="modt-item" data-item="2">
+          <div class="modt-item-top"><span class="modt-item-id">SOC-SP8</span><span class="modt-spacer" style="flex:1"></span><span class="modt-chip ok">ON TRACK</span></div>
+          <div class="modt-item-title">Balanced inbound / outbound split</div>
+          <div class="modt-item-meta"><span>9 paths</span><span>·</span><span>updated 5 h ago</span></div>
+        </div>
+        <div class="modt-item" data-item="3">
+          <div class="modt-item-top"><span class="modt-item-id">SOC-RJ1</span><span class="modt-spacer" style="flex:1"></span><span class="modt-chip warn">WATCH</span></div>
+          <div class="modt-item-title">Path uses a single outbound dock in peak</div>
+          <div class="modt-item-meta"><span>7 paths</span><span>·</span><span>updated 1 d ago</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="modt-panel">
+      <div class="modt-panel-head">
+        <span class="modt-panel-title">Paths · SOC-SP2</span>
+        <span class="modt-count">12</span>
+        <span class="modt-spacer"></span>
+      </div>
+      <div class="modt-body">
+        <table class="modt-table">
+          <thead><tr>
+            <th>Path</th><th>Inbound dock</th><th>Outbound dock</th>
+            <th class="modt-num">Peak load</th><th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><div class="modt-cell-name">LMH → InterSOC</div><div class="modt-cell-sub">path_0021</div></td><td>D4</td><td>D7</td><td class="modt-num">118%</td><td><span class="modt-chip err">Breach</span></td></tr>
+            <tr><td><div class="modt-cell-name">LMH → LMH</div><div class="modt-cell-sub">path_0022</div></td><td>D2</td><td>D3</td><td class="modt-num">86%</td><td><span class="modt-chip ok">OK</span></td></tr>
+            <tr><td><div class="modt-cell-name">XPT → LMH</div><div class="modt-cell-sub">path_0023</div></td><td>D5</td><td>D1</td><td class="modt-num">91%</td><td><span class="modt-chip warn">Watch</span></td></tr>
+            <tr><td><div class="modt-cell-name">InterSOC → LMH</div><div class="modt-cell-sub">path_0024</div></td><td>D6</td><td>D2</td><td class="modt-num">72%</td><td><span class="modt-chip ok">OK</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+</div>
+</body>
+</html>

@@ -67,6 +67,21 @@ python3 -m http.server 8000
 - 字体：Roboto + 系统字体栈；字号：页面标题 20/600，卡片标题 13.5/600，正文 12.5，辅助 11。
 - 版式参考 Data Gov 页：顶部 KPI 卡片带 → 下方「左列表 / 右明细」两栏。LH Copilot 页可参考 KPI 三卡 + 图表 + 列表的结构。
 
+## 团队用的 skill（ID MM Opt Design）
+
+仓库里带了一份给团队 agent 用的 skill：`skill/id-mm-opt-design/`。
+
+装法（一次性）：
+
+```bash
+mkdir -p ~/.claude/skills && cp -r skill/id-mm-opt-design ~/.claude/skills/
+# DSH: cp -r skill/id-mm-opt-design ~/.dsh/skills/
+```
+
+然后在对话里说「用 id-mm-opt-design skill，我是 <模块> owner，把 modules/<文件>.html 改成 <页面描述>」，
+它就会按 skill 的流程走：拉代码 → 只改自己的文件 → 套 token → 本地自测 → 提 PR。
+用法示例见 `skill/id-mm-opt-design/SAMPLE-PROMPT.md`，合并原则见 `skill/id-mm-opt-design/references/merge-principles.md`。
+
 ## 团队协作
 
 仓库是 public，所以：
