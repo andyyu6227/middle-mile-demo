@@ -1,6 +1,6 @@
 ---
 name: id-mm-opt-design
-description: "把某个模块的页面设计并进 Middle-Mile Optimization demo（GitHub Pages 在线 demo，仓库 andyyu6227/middle-mile-demo，线上 https://andyyu6227.github.io/middle-mile-demo/）。用于 PM / 设计师 / 模块 owner 想要设计或更新中程优化套件里某个模块的页面（LH Planner、LH Copilot、Network Optimization Toolbox、Simulation Analysis、Data Gov），并把它合并进同一个 demo。覆盖：拉代码 / fork、按模块文件所有权改自己的一个 HTML、套设计 token、本地自测、分支 + PR 合并原则、Pages 自动发布校验。也覆盖"手上已有能跑的交互 demo，要原样搬进某个模块"（快照嵌入：modules/<key>-app.html + 薄壳，含脱敏与体积例外）。Do NOT use for：PPT / 汇报页、独立 HTML 报告、产品代码仓库改动。"
+description: "把某个模块的页面设计并进 Middle-Mile Optimization demo（GitHub Pages 在线 demo，仓库 andyyu6227/middle-mile-demo，线上 https://andyyu6227.github.io/middle-mile-demo/）。用于 PM / 设计师 / 模块 owner 想要设计或更新中程优化套件里某个模块的页面（LH Planner、LH Copilot、Network Optimization Toolbox、Simulation Analysis、Data Gov），并把它合并进同一个 demo。覆盖：拉代码 / fork、按模块文件所有权改自己的一个 HTML、套设计 token、本地自测、分支 + PR 合并原则、Pages 自动发布校验。也覆盖"手上已有能跑的交互 demo，要原样搬进某个模块"（快照嵌入：modules/<key>-app.html + 薄壳，含脱敏与体积例外；以及内网在线工具直接 iframe + https/VPN 兜底）。Do NOT use for：PPT / 汇报页、独立 HTML 报告、产品代码仓库改动。"
 ---
 
 # ID MM Opt Design — 把模块设计并进同一个 demo
@@ -24,6 +24,7 @@ description: "把某个模块的页面设计并进 Middle-Mile Optimization demo
 2. **有没有写权限**：是 collaborator（能直接推分支）还是没有（走 fork + PR）。不确定就让用户去仓库 Settings → Collaborators 看，或直接按 fork 流程走。
 3. **你手上有没有已经能跑的 demo**：
    - 有（单个 HTML、设计导出、双击能开、交互是重点）→ 走**快照嵌入**，读 `references/embed-existing-demo.md`；
+   - 是个**内网在线服务的 URL**（AIP / Streamlit / 有自己的 `/api/*` + 登录）→ 走**薄壳 + iframe 框线上地址**，见同文件 §1.6（`modules/network-opt.html` 是现成范例）；
    - 没有 → 三个待接入模块已有骨架（`modules/<key>.html`），在骨架里画内容。
 
 如果用户没说是哪个模块，按它们的定位反推再确认：

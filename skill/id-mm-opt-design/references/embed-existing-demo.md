@@ -8,7 +8,8 @@
 |---|---|---|
 | 单个 HTML，双击能开，交互都在里面 | **快照嵌入**（推荐） | 十几分钟 |
 | 交互本身就是卖点（日历、甘特、拖拽、多页切换） | **快照嵌入** | 十几分钟 |
-| Streamlit / 视频 / 只有截图 / 只是"信息结构参考" | **重画** | 半天 |
+| 内网在线服务 URL（AIP / Streamlit / 有自己的 `/api/*` + 登录） | **薄壳 + iframe 框线上地址**（§1.6） | 十几分钟 |
+| Streamlit 录屏 / 视频 / 只有截图 / 只是"信息结构参考" | **重画** | 半天 |
 
 一句话判断：**要是 demo 的交互本身就是要展示的东西，就快照；页面只是要展示信息结构，就重画。**
 两条路都要脱敏、都要自测，区别只是改的是"patch 原件"还是"照 design-system 重写"。
@@ -126,6 +127,40 @@ grep -noE "\.xlsx|\.csv|\.xls|workbook|sheet|operator|market\"?: ?\"[A-Z]{2}" mo
 - 快照例外：**≤ 1.5 MB**（现有 `modules/lh-copilot-workspace.html` 是 1.1 MB 的真实组件快照，就是这条路）。
 - PR 描述里写一句：`Snapshot exception: 448 KB, source = LH Planner demo export`。
 
+### 1.6 已经在线跑的工具（有后端 / 要登录）——框它，不要抄它
+
+如果对方给你的不是一个能双击开的 HTML，而是一个**内网在线服务的 URL**（AIP / Streamlit / Flask + 自己的 `/api/*` + SSO），
+**不要走快照**。实测：把页面 HTML 拷下来本地打开，壳子还在，但每个面板都报 `Unexpected token '<', "<!DOCTYPE "... is not valid JSON`
+——它调的是自己域名下的 `/api/meta`，拷走就等于把后端拷丢了。
+
+正确做法是薄壳 + 一个指向线上地址的 iframe，再加三层兜底（`modules/network-opt.html` 就是这个写法）：
+
+```html
+<div class="bar">  <!-- 36px 细条：状态 + 永远留一个"新标签打开" -->
+  <span class="dot"></span><span id="statusText">Live from the internal AI platform</span>
+  <a class="btn primary" href="http://…/feedback-network/" target="_blank" rel="noopener">Open in new tab</a>
+</div>
+<div class="stage"><iframe id="frame"></iframe></div>
+<script>
+  var LIVE = 'http://…/feedback-network/';
+  if (location.protocol === 'https:') {            // 1) https 页面框 http 应用 = 混合内容，浏览器直接拦
+    showPanel({ title: 'Open it in its own tab', steps: ['Connect VPN', 'Sign in', '…'] });
+  } else {
+    frame.src = LIVE;                              // 2) 正常：铺满
+    fetch(LIVE, { mode: 'no-cors', cache: 'no-store' }).catch(function () {
+      showPanel({ title: 'Cannot reach …', retry: true });   // 3) 没连 VPN → 检查 / 再试一次
+    });
+  }
+</script>
+```
+
+三条要注意的：
+
+- 先确认对方没有禁止被框：`curl -sI <url> | grep -i "x-frame-options\|content-security-policy"`，有 `frame-ancestors` / `DENY` 就老实做链接卡片。
+- 探活用 `mode:'no-cors'`：读不到响应也够用，401（要登录）也算"通"，只有网络层失败才会 reject。给它 9 秒超时。
+- 登录常常是死结：Google SSO 在 iframe 里基本登不上，所以细条上**永远**保留「Open in new tab」；能改成内网账号密码登录的工具，在 iframe 里才真正可用。
+- 这类页面不受 300 KB 限制（只有一个壳，10 KB 出头），但也不能算"自包含 demo"——README 里要写清楚它需要 VPN。
+
 ## 2. 重画
 
 demo 只当信息架构参考，按 `references/design-system.md` 的 token 和 `assets/module-template.html` 的骨架重写。
@@ -145,6 +180,8 @@ demo 只当信息架构参考，按 `references/design-system.md` 的 token 和 
 | 模块页白屏 | 薄壳 iframe `src` 写成 `modules/xxx-app.html` | 改成同目录相对路径 `xxx-app.html` |
 | 左侧出现两条导航 | 没删 demo 自带的 sidebar | 按 §1.3 第 1 条删 |
 | 页面上下都被切 | iframe 高度用 `100vh` 又套了一层 | 用 `flex:1; min-height:0` |
+| 拷下来的页面满屏 `Unexpected token '<'` | 它要调自己域名下的 `/api/*`，后端拷不走 | 别快照，按 §1.6 框线上地址 |
+| https 页面上 iframe 一片灰 / 被拦 | http 应用 + 混合内容 | 按 `location.protocol` 分支，https 时给"新标签打开"卡片 |
 | 出现双滚动条 | `body` 没 `overflow:hidden` | 加 `overflow:hidden`，滚动交给 iframe 内部 |
 | 断网后字体变丑 | 还留着 Google Fonts 链接 | 按 §1.3 第 3 条删 |
 | console 有 `__dc_booted` 之类 message | demo 向父页 postMessage | 正常，父页面忽略即可 |

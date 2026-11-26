@@ -11,7 +11,7 @@
 |---|---|---|
 | LH Planner | 待接入（页面骨架） | `modules/lh-planner.html` |
 | LH Copilot | 可用（dashboard tab，按真实组件 1:1 复刻） | `index.html` + `modules/lh-copilot-workspace.html` |
-| Network Optimization Toolbox | 待接入（页面骨架） | `modules/network-opt.html` |
+| Network Optimization Toolbox | 可用（iframe 内嵌 Network Plan Studio 实时工具，需 VPN + Shopee 账号） | `modules/network-opt.html` |
 | Simulation Analysis | 待接入（页面骨架） | `modules/simulation.html` |
 | Data Gov | 可用（KPI + 工单 + 数据集单页，右上角 + 可新增 dataset / 校验规则） | `index.html` 内置 |
 
@@ -28,6 +28,8 @@ user-flow.html                  ← 用户流程图
 architecture.html               ← 产品架构图
 .github/workflows/pages.yml     ← push to main 自动发布到 GitHub Pages
 ```
+
+`modules/network-opt.html` 不是重画的页面，而是把内网在线工具 **Network Plan Studio**（`http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/`）用 iframe 框进来，上面加一条 36px 状态条。它有三种状态：本地双击打开 + 连了 VPN → 直接嵌在里面用；没连 VPN → 显示「检查 VPN / 再试一次」；从 https 的 Pages 打开 → 显示「去新标签打开」卡片（http 应用不能被 https 页面框，浏览器会拦混合内容）。所以线上链接里点 Network Optimization Toolbox，看到的是那张卡片，这是预期行为。
 
 `modules/lh-copilot-workspace.html` 是 LH Copilot 真实 dashboard 里那块 iframe（case list + dock chart + lane heatmap）的整页快照，所以视觉 1:1；它偏大（约 1.2MB，含 84 条 lane × 71 个时段的渲染数据）。要更新它，用真实 app 重新抓一次 iframe 的 HTML 覆盖这个文件即可，`index.html` 不需要动。
 
