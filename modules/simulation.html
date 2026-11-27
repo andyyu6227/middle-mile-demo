@@ -1,101 +1,394 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulation Analysis · Middle-Mile Optimization</title>
-<!--
-  ============================================================================
-  Simulation Analysis  —  module page (owner: TBD — Simulation PM)
-  ============================================================================
-  HOW THIS FILE WORKS
-  * It is rendered inside the suite shell (index.html) via an <iframe>, using
-    the entry in modules/registry.js:
-        'simulation': 'modules/simulation.html'
-  * It also opens fine on its own (double-click) — no build step, no CDN.
-  * To design this module: replace the .wrap content below with your page.
-    Keep it self-contained (inline CSS/JS, no external fonts or scripts) so the
-    demo still works offline and on GitHub Pages.
-  * Design tokens are copied below so you can style freely without touching
-    other modules. Brand #EE4D2D · text #303844 · muted #7E8692.
-  * UI copy is English only.
-  ============================================================================
--->
-<style>
-  :root {
-    --brand: #EE4D2D; --brand-bg: #FFF5F0;
-    --success: #1CC461; --success-bg: #ECFFF1;
-    --error: #F32345; --error-bg: #FFF0F0;
-    --warning: #FFB014; --warning-bg: #FFF8DB;
-    --info: #3274F7; --info-bg: #F0F7FF;
-    --info2: #FF831D; --info2-bg: #FEECE1;
-    --g8: #303844; --g7: #7E8692; --g6: #959BA4; --g5: #B5BBC6;
-    --g4: #E2E6EC; --g3: #ECF0F4; --g2: #F5F6F9; --g1: #F9FAFC;
-    --sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-            "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: var(--sans); font-size: 14px; color: var(--g8);
-    background: var(--g2); -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 26px 28px 48px; }
-  .page-title { font-size: 20px; font-weight: 600; letter-spacing: -.1px; }
-  .page-desc { font-size: 12.5px; color: var(--g7); margin-top: 5px; line-height: 1.55; }
-  .head { margin-bottom: 20px; }
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulation Analysis · Middle-Mile Optimization</title><style>*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#252c36;font:15px/1.45 Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}button,select,input{font:inherit}button,select{cursor:pointer}button{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:white;color:#353e48;border:1px solid #d8dde2;border-radius:5px;padding:8px 13px;font-weight:550}button:hover,select:hover{border-color:#8794a0}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #2085d4;outline-offset:2px}svg.icon{height:18px;width:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}.primary{background:#e94d2e;color:white;border-color:#e94d2e}.primary:hover{background:#c94025}.plain{background:transparent;border:0;padding:4px 0;font-size:14px;color:#596472}.brand{display:flex;align-items:baseline;gap:3px;color:#ff6847;line-height:1}.brand strong{font:italic 900 38px/1 Arial,sans-serif;transform:skew(-9deg)}.brand i{font-size:12px;font-weight:800}.railname{color:#cdd3dc;font-size:13px;margin-top:9px}.group,.eyebrow,.kicker{font:650 12px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace}.group{margin:45px 0 12px;color:#9ba6b2}aside{position:fixed;inset:0 auto 0 0;background:#222933;width:208px;padding:25px 17px;color:white;z-index:2}nav button{width:100%;justify-content:flex-start;background:transparent;border:0;color:#cbd1da;margin:2px 0;padding:11px 10px;font-size:14px;font-weight:500;gap:11px}nav button:hover{background:#2a3440}nav .active{background:#111a24;color:white;box-shadow:inset 3px 0 #fa5b38}nav .active svg{color:#ff795b}.railfoot{position:absolute;bottom:20px;color:#abb4bf;font-size:12px;border-top:1px solid #424851;padding-top:16px;width:calc(100% - 34px)}.led{display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#51b897}main{margin-left:208px}header,footer,.row,.intro,.sectitle,.dialoghead,.legend,.tools,.meta,.metrichead{display:flex;align-items:center;gap:10px}header,footer,.intro,.sectitle,.dialoghead,.metrichead{justify-content:space-between}header{background:white;border-bottom:1px solid #e2e5ea;padding:0 28px;height:54px;font-size:13px;color:#6a727e}header strong{color:#313a44;font-weight:600}header b{margin:0 6px;color:#a9b1b9}.market{display:flex;align-items:center;gap:7px}.flag{width:17px;height:12px;background:linear-gradient(#de4333 50%,white 50%);border:1px solid #ddd}article{max-width:1580px;margin:auto;padding:25px 28px 20px}.intro{margin-bottom:20px;flex-wrap:wrap}.eyebrow{color:#a44129;display:flex;align-items:center;gap:7px}.eyebrow:before{content:"";width:19px;height:2px;background:#ee4d2d}h1{margin:3px 0 4px;font-size:30px;line-height:1.25}h2{font-size:18px;margin:0}h3{font-size:15px;margin:0}.sub,.meta,small,.hint{color:#65707f}.meta,.sub{font-size:14px}.tools,.meta,.legend{flex-wrap:wrap}.tools{gap:8px}.surface,.metrics,.analysis{background:white;border:1px solid #dfe4e8;border-radius:6px;overflow:hidden}.sectitle{padding:15px 18px}.sectitle .row{gap:8px}.label,.pill{font-size:12px;padding:3px 8px;background:#f1f3f6;border-radius:4px;font-weight:550;color:#5b6774}.pill{background:#e6f3ed;color:#237854}.canvas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:23px;padding:18px;background-color:#f9fafb;background-image:radial-gradient(#cdd3da .9px,transparent .9px);background-size:12px 12px;border-block:1px solid #e1e5ea}.node{position:relative;display:block;text-align:left;padding:12px 14px;background:white;border:1px solid #cdd4dc;border-top:3px solid var(--tone);border-radius:5px;min-width:0;box-shadow:0 2px 4px #12263808}.node:hover{border-color:var(--tone)}.node:not(:last-child):after{content:"";position:absolute;left:calc(100% + 1px);top:50%;width:23px;height:1px;background:#99a5b1}.node:not(:last-child):before{content:"";position:absolute;right:-21px;top:calc(50% - 3px);border:solid #99a5b1;border-width:1px 1px 0 0;width:5px;height:5px;transform:rotate(45deg)}.nodetop{display:flex;align-items:center;justify-content:space-between;color:#7a8591;font:12px ui-monospace,monospace}.tileicon{width:29px;height:29px;display:inline-grid;place-items:center;background:var(--tint);color:var(--tone);border-radius:5px}.node strong{display:block;font-size:15px;margin:9px 0 2px}.node small{font-weight:400;font-size:13px}.canvasfoot{padding:9px 18px;display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#6a7480;background:#fff}.resulthead{margin:23px 0 10px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:14px}.metric{padding:15px 18px}.metric+.metric{border-left:1px solid #e3e6e9}.metrichead{color:#525e6b;font-size:14px}.metrichead svg{color:#88929d}.num{font-size:28px;font-weight:660;line-height:1.4;font-variant-numeric:tabular-nums}.num small{font:500 13px system-ui}.delta{font-size:12px;color:#687381}.delta b{font-weight:600;border-radius:3px;padding:2px 4px}.good{color:#16825f;background:#eaf7f0}.bad{color:#b44728;background:#fff0e9}.analysis{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(230px,1fr)}.chartarea{padding:17px 20px;min-width:0}.insight{border-left:1px solid #e1e5e9;padding:17px 20px}.charthead{display:flex;align-items:start;justify-content:space-between;gap:8px;flex-wrap:wrap}.legend{font-size:12px;color:#596370;margin:8px 0}.line{display:inline-block;width:22px;height:0;border-top:3px solid #ee5536}.line.baseline{border-color:#8194ae;border-top-style:dashed}.chart{display:block;width:100%;height:auto;min-height:144px;max-height:230px}.chart text{fill:#687583;font:12px Arial}.insight h2{margin-bottom:12px}.finding{display:flex;align-items:flex-start;gap:9px;margin:11px 0}.finding .tileicon{flex:none}.finding small{display:block;margin:3px 0;line-height:1.45}.tbl{width:100%;border-collapse:collapse;text-align:left;font-size:14px}.tbl th{background:#f7f8fa;color:#657180;font-size:13px;font-weight:500}.tbl th,.tbl td{padding:10px 17px;border-top:1px solid #e7eaee}.numcell{font-variant-numeric:tabular-nums}.scroll{overflow-x:auto}footer{max-width:1580px;margin:auto;padding:9px 28px 20px;color:#69737e;font-size:12px}.topgap{margin-top:16px}select,input[type=number]{border:1px solid #cdd5dd;background:white;color:#303b45;border-radius:4px;padding:7px 9px}.inline{font-size:13px}.empty{padding:18px}.library{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.library button{justify-content:start;text-align:left}.dialoghead{border-bottom:1px solid #dce1e7;padding:14px 20px}.dialoghead button{border:0;font-size:23px;padding:0 6px}dialog{border:1px solid #cad1d9;color:#26313c;border-radius:7px;width:min(600px,calc(100% - 32px));padding:0;max-height:86vh}dialog::backdrop{background:#18263366}#dc{padding:18px 20px}#dc label{display:grid;gap:5px;font-weight:550;margin:13px 0}#dc .actions{margin:20px -20px -18px;padding:12px 20px;border-top:1px solid #dce1e7;display:flex;justify-content:end}.warn{background:#fff5df;padding:10px;font-size:14px;color:#825913}.seg{display:flex}.seg button{font-size:13px;border-radius:0;padding:5px 9px}.seg .on{background:#fff2eb;color:#ac391b;border-color:#e88b72}#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#202c38;color:#fff;padding:9px 14px;border-radius:5px;z-index:5;pointer-events:none}#toast:empty{display:none}.tagline{color:#697787;font-size:12px}.minor{color:#697787;font-size:14px}.selected{outline:2px solid #ee4d2d}.tip{font-size:13px;color:#5c6876;margin:8px 0 0}.snapshotgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}.snapshotgrid>div{background:white;border-top:3px solid #788ea4;padding:18px}.snapshotgrid ul{padding-left:18px;color:#586675}.badgeicon{color:#d34c2b}.iconline{display:flex;align-items:center;gap:8px}.mobilebrand{display:none}
+@media(max-width:1150px){aside{width:178px;padding-inline:12px}main{margin-left:178px}article{padding:20px 18px}.canvas{gap:16px;padding:14px}.node{padding:10px}.node:not(:last-child):after{width:16px}.node:not(:last-child):before{right:-15px}.chartarea,.insight,.metric{padding:13px}.analysis{grid-template-columns:minmax(0,1.8fr) minmax(220px,1fr)}}
+@media(max-width:850px){aside{position:static;width:100%;padding:10px 14px;display:flex;align-items:center;gap:16px}.brand strong{font-size:29px}.brand i,.railname,.group,.railfoot{display:none}nav{display:flex;flex-wrap:wrap}nav button{width:auto;font-size:13px;padding:6px 8px;gap:5px}main{margin:0}header{height:39px;padding:0 16px}.analysis{grid-template-columns:minmax(0,1.75fr) minmax(205px,1fr)}}
+@media(max-width:650px){aside{align-items:flex-start;gap:8px}nav{gap:0}nav button{font-size:12px;padding:4px}nav svg.icon{width:15px;height:15px}article{padding:16px 10px}.intro{gap:12px}h1{font-size:25px}.canvas,.metrics,.library,.snapshotgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.node:nth-child(2):before,.node:nth-child(2):after{display:none}.canvasfoot,.charthead{flex-wrap:wrap}.metrics .metric:nth-child(3){border-left:0}.metrics .metric:nth-child(n+3){border-top:1px solid #e3e6e9}.analysis{display:block}.insight{border-left:0;border-top:1px solid #e1e5e9}.sectitle{padding:12px}.tools button{font-size:14px}.market{font-size:12px}.sectitle,.resulthead{flex-wrap:wrap}.snapshotgrid{grid-template-columns:1fr}footer{flex-wrap:wrap;padding:10px}}
+.tasktabs,.listtools,.savebar,.formstrip,.backline,.runtime,.paramrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.tasktabs{padding:0 18px;border-bottom:1px solid #dde3e9}.tasktabs button{border:0;border-radius:0;padding:14px 5px;border-bottom:2px solid transparent;font-size:14px}.tasktabs .current{border-color:#ee4d2d;color:#b83c23}.tasktabs span{font:12px ui-monospace,monospace;padding:1px 5px;background:#f0f2f5;border-radius:3px}.listtools,.formstrip,.savebar{padding:16px 18px}.listtools input,.formstrip input{font:inherit;border:1px solid #cad2db;border-radius:4px;padding:8px 10px}.listtools input{width:min(300px,100%)}.tasktable td:first-child small{display:block;font:12px ui-monospace,monospace}.tasktable tr:has(td):hover{background:#fafbfc;cursor:pointer}.tasklink,.actionlink{background:transparent!important;border:0!important;color:#2262a0!important;padding:0!important;text-align:left}.tasklink{font-size:15px!important;margin-bottom:3px}.state{display:inline-block;font-size:13px;padding:2px 7px;border-radius:3px}.done{background:#e8f6ee;color:#26764d}.draft{background:#edf0f4;color:#586576}.zero{text-align:center}.backline{margin-bottom:10px}.formstrip{border-bottom:1px solid #e4e8eb;align-items:flex-end}.formstrip label,.paramrow label{display:grid;gap:5px;font-size:14px;font-weight:550}.formstrip label:first-child{flex:1;min-width:180px}.builderhead{border-bottom:1px solid #e0e5ea}.builderhead .tools button{font-size:13px}.workbench{display:grid;grid-template-columns:190px minmax(0,1fr)}.palette{padding:15px 12px;background:#fafbfc;border-right:1px solid #dce2e7}.palettegroup{font-size:12px;color:#647282;margin:12px 0 4px}.palette button{width:100%;justify-content:flex-start;text-align:left;padding:6px 7px;font-size:13px;margin:2px 0;cursor:grab}.palette button span{margin-left:auto;color:#29815b}.palette button svg{width:15px}.workarea{min-width:0;background-color:#fafbfc;background-image:radial-gradient(#cbd2d9 .8px,transparent .8px);background-size:12px 12px;padding:16px}.flowgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:start}.stage{position:relative;background:white;border:1px solid #ced6de;border-top:3px solid var(--tone);border-radius:4px;padding:9px;min-width:0;overflow-wrap:anywhere}.stage:not(:last-child):after{content:'›';position:absolute;left:100%;top:38px;width:12px;text-align:center;color:#536c80}.stage.focused{outline:2px solid var(--tone);outline-offset:1px}.stagetitle{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:6px;width:100%;border:0;padding:0;text-align:left}.stagetitle b{width:100%;font-size:14px}.stagetitle small,.slot small{font-size:11px}.slot{margin-top:8px;padding-top:7px;border-top:1px solid #e4e8ec;font-size:13px}.slot small{display:block;color:#6c7681;margin-bottom:3px}.installed{display:flex;align-items:center;justify-content:space-between;gap:2px}.installed button{border:0;padding:1px 4px;color:#63717d}.vacant{display:block;padding:4px 6px;border:1px dashed #bac5cf;border-radius:3px;color:#657381}.inspector,.runtime{background:white;margin-top:18px;padding:12px 14px;border:1px solid #d7dfe6;border-radius:4px}.runtime{font-size:13px}.paramrow{margin-top:10px;font-size:14px}.paramrow p{margin:0}.savebar{border-top:1px solid #dce2e7;justify-content:space-between}.savebar>span{font-size:13px;color:#697482}@media(max-width:1100px){.flowgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage:nth-child(2):after{display:none}}@media(max-width:680px){.workbench{grid-template-columns:1fr}.palette{border-right:0;border-bottom:1px solid #dce2e7}.palette button{width:auto;margin-right:4px}.workarea{padding:12px}.tasktable{min-width:620px}.formstrip label{width:100%}.runtime{gap:4px}.tasktabs{gap:6px}}
+.paramlayout{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(205px,1fr)}.paramsheet{padding:0 20px}.paramsheet section{padding:16px 0}.paramsheet section+section{border-top:1px solid #e1e6eb}.paramsheet .paramrow{align-items:end}.paramsheet input[type=number]{width:100%;max-width:160px}.paramsheet .checkfield{display:flex;align-items:center;min-height:34px}.checkfield input{accent-color:#ee4d2d}.paramsummary{background:#f8fafb;border-left:1px solid #dfe4e8;padding:16px}.paramsummary h4{font-size:14px;margin:15px 0 5px}.paramsummary ul{font-size:13px;padding-left:18px;color:#506071;margin:0}.paramsummary li{margin-bottom:4px}.paramsummary h4:first-of-type{color:#a64a28}details summary{cursor:pointer}@media(max-width:720px){.paramlayout{grid-template-columns:1fr}.paramsummary{border-left:0;border-top:1px solid #dfe4e8}}
 
-  .empty-state {
-    background: #fff; border: 1px solid var(--g4); border-radius: 4px;
-    padding: 44px 32px 36px; text-align: center;
+/* ===== embedded in the Middle-Mile Optimization demo ====================== */
+.concept{display:inline-flex;align-items:center;gap:6px;font:650 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em;text-transform:none;color:#8a5a12;background:#fff3d6;border:1px solid #f0d493;border-radius:999px;padding:6px 10px}
+.concept:before{content:"";width:6px;height:6px;border-radius:50%;background:#d98a16}
+.modfoot{max-width:1580px;margin:0 auto;padding:6px 28px 26px;font-size:12px;color:#69737e;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.modfoot b{font-weight:600;color:#3b4550}
+.planver{border:1px solid #d8dee4;border-radius:5px;background:#fbfcfd;padding:10px 12px;margin-top:10px;display:grid;gap:6px}
+.planver .pvtop{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.planver .pvname{font-weight:600;font-size:14px}
+.planver .pvmeta{font-size:12px;color:#65707f}
+.pvlist{display:grid;gap:6px;margin-top:12px}
+.pvrow{display:flex;align-items:center;gap:10px;border:1px solid #dfe4e9;border-radius:5px;padding:10px 12px;cursor:pointer;background:#fff}
+.pvrow:hover{border-color:#b9c3cd;background:#fafbfc}
+.pvrow.current{border-color:#ee4d2d;box-shadow:inset 3px 0 #ee4d2d}
+.pvrow .pvmain{flex:1;min-width:0;display:grid;gap:2px}
+.pvrow .pvlabel{font-weight:600;font-size:14px}
+.pvrow .pvsub{font-size:12px;color:#65707f}
+.pvflag{font:600 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.04em;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.pvflag.pub{background:#e8f6ee;color:#26764d}
+.pvflag.sup{background:#eef0f3;color:#586576}
+.pvflag.dft{background:#fff4e0;color:#9a6412}
+.plancheck .canvasfoot{border-top:1px solid #e7eaee}
+.plancheck .insight{border-top:1px solid #e1e5e9}
+.plancheck td.n,.plancheck th.n{text-align:right;font-variant-numeric:tabular-nums}
+.verdict{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.04em;padding:5px 9px;border-radius:4px;white-space:nowrap}
+.verdict.ok{background:#e8f6ee;color:#1d6b45}
+.verdict.warn{background:#fff4e0;color:#8a5a12}
+.verdict.bad{background:#fdecea;color:#a02f17}
+.dropzone{border:1px dashed #b9c4cf;border-radius:6px;padding:12px;background:#fbfcfd}
+.dropzone input[type=file]{margin-top:6px}
+code.k{background:#f1f3f6;border-radius:3px;padding:1px 4px;font-size:12px}
+#dc .actions{gap:8px}
+.filelabel{display:inline-flex!important;align-items:center;gap:8px;cursor:pointer;background:#fff;border:1px solid #d8dde2;border-radius:5px;padding:7px 12px;font-size:14px;font-weight:550;margin:10px 0 0!important;width:max-content}
+.filelabel:hover{border-color:#8794a0}
+.insp-grid{display:grid;gap:10px;justify-items:start;margin-top:10px}
+</style></head><body data-entry="editor">
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none"><symbol id="i-workflow" viewBox="0 0 24 24">
+  <rect width="8" height="8" x="3" y="3" rx="2" />
+  <path d="M7 11v4a2 2 0 0 0 2 2h4" />
+  <rect width="8" height="8" x="13" y="13" rx="2" />
+</symbol><symbol id="i-activity" viewBox="0 0 24 24">
+  <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />
+</symbol><symbol id="i-database" viewBox="0 0 24 24">
+  <ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" />
+</symbol><symbol id="i-history" viewBox="0 0 24 24">
+  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+  <path d="M3 3v5h5" />
+  <path d="M12 7v5l4 2" />
+</symbol><symbol id="i-route" viewBox="0 0 24 24">
+  <path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15" />
+  <circle cx="18" cy="19" r="3" />
+  <circle cx="6" cy="5" r="3" />
+</symbol><symbol id="i-truck" viewBox="0 0 24 24">
+  <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+  <path d="M15 18H9" />
+  <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+  <circle cx="17" cy="18" r="2" />
+  <circle cx="7" cy="18" r="2" />
+</symbol><symbol id="i-warehouse" viewBox="0 0 24 24">
+  <path d="M18 21V10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v11" />
+  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 1.132-1.803l7.95-3.974a2 2 0 0 1 1.837 0l7.948 3.974A2 2 0 0 1 22 8z" />
+  <path d="M6 13h12" />
+  <path d="M6 17h12" />
+</symbol><symbol id="i-layers" viewBox="0 0 24 24">
+  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
+</symbol><symbol id="i-coins" viewBox="0 0 24 24">
+  <path d="M13.744 17.736a6 6 0 1 1-7.48-7.48" />
+  <path d="M15 6h1v4" />
+  <path d="m6.134 14.768.866-.5 2 3.464" />
+  <circle cx="16" cy="8" r="6" />
+</symbol><symbol id="i-timer" viewBox="0 0 24 24">
+  <line x1="10" x2="14" y1="2" y2="2" />
+  <line x1="12" x2="15" y1="14" y2="11" />
+  <circle cx="12" cy="14" r="8" />
+</symbol><symbol id="i-clipboard-list" viewBox="0 0 24 24">
+  <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+  <path d="M12 11h4" />
+  <path d="M12 16h4" />
+  <path d="M8 11h.01" />
+  <path d="M8 16h.01" />
+</symbol><symbol id="i-blocks" viewBox="0 0 24 24">
+  <path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2" />
+  <rect x="14" y="2" width="8" height="8" rx="1" />
+</symbol><symbol id="i-play" viewBox="0 0 24 24">
+  <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
+</symbol><symbol id="i-send" viewBox="0 0 24 24">
+  <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" />
+</symbol><symbol id="i-check" viewBox="0 0 24 24">
+  <path d="M20 6 9 17l-5-5" />
+</symbol><symbol id="i-folder-open" viewBox="0 0 24 24">
+  <path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" />
+</symbol></svg>
+<article id="view"></article><div class="modfoot"><span><b>Simulation Analysis</b> · concept demo</span><span>Illustrative data only · no production connection</span></div>
+<dialog id="dialog"><div class="dialoghead"><h2 id="dt"></h2><button onclick="dialog.close()" aria-label="Close dialog">×</button></div><div id="dc"></div></dialog><div role="status" id="toast"></div><script>const base = {source:'Forecast volume', uplift:35, route:'Current routing', plan:'Fixed timetable', dispatch:'No adjustment', sort:1800, limit:4};
+const surge = {...base, plan:'Long Haul Planning Algo', dispatch:'Copilot dispatch'};
+const replay = {...base, source:'Historical replay', uplift:0, plan:'Long Haul Planning Algo'};
+const stations = ['Cakung SOC','Bekasi SOC','Tangerang SOC'];
+const profile = [260,220,170,160,200,330,550,710,830,940,1030,1110,1060,970,1020,1240,1490,1650,1580,1410,1100,850,600,370];
+/* ---- LH Planner plan import ------------------------------------------------
+   A plan export is the timetable the planner published for the week: planned
+   departures per sorting centre per hour. The simulation checks that plan
+   against the volume forecast and the dock limit before the week starts. */
+function plannerShare(i){return [1.26,.98,.76][i];}
+function plannerNeed(i,h,uplift=35){return Math.ceil(profile[h]*plannerShare(i)*(1+uplift/100)/520);}
+function plannerTrips(kind){
+  const rows=[];
+  for(let i=0;i<3;i++){
+    const row=[];
+    for(let h=0;h<24;h++){
+      let v=Math.min(plannerNeed(i,h),4);
+      if(kind==='superseded'&&h>=18&&h<=20)v=Math.max(0,v-1);
+      if(kind==='draft'){if(i===2&&h>=22)v=0;if(i===1&&h===19)v=5;}
+      row.push(v);
+    }
+    rows.push(row);
   }
-  .es-ic {
-    width: 52px; height: 52px; border-radius: 13px; background: var(--brand-bg);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 16px;
+  return rows;
+}
+const plannerVersions=[
+  {id:'W48-v3',label:'2026-W48 · v3',status:'Published',flag:'pub',published:'24 Nov 2026 · 18:40 WIB',note:'Latest published plan for the Jakarta network',trips:plannerTrips('published')},
+  {id:'W48-v1',label:'2026-W48 · v1',status:'Superseded',flag:'sup',published:'21 Nov 2026 · 09:12 WIB',note:'Built on last week\u2019s uplift; superseded by v3',trips:plannerTrips('superseded')},
+  {id:'W49-draft',label:'2026-W49 · draft',status:'Draft',flag:'dft',published:'Not published yet',note:'Draft — night trips missing, one hour over the dock limit',trips:plannerTrips('draft')}
+].map(v=>({...v,stationHours:72,tripTotal:v.trips.reduce((a,r)=>a+r.reduce((x,y)=>x+y,0),0)}));
+const planCheckPreset={...surge,plan:'LH Planner plan',planVersion:plannerVersions[0],dispatch:'No adjustment'};
+const runtimeDefaults={days:7,loadThreshold:80,maxWait:2,utilCap:.9,cancel:true,cancelBelow:30,nextWithin:3,eta:'P50',tier:'T2',delay:false,reps:1};
+// Hourly FIFO cohorts retain their arrival time through sorting and linehaul.
+function simulate(c,hours=24,scope=-1){
+  const count=c.tier==='T3'&&c.delay?c.reps:1;
+  const a=simulateOnce(c,hours,scope,0);
+  // Randomness is confined to transit after dispatch; queue metrics are identical across repeats.
+  for(let r=1;r<count;r++)a.transit+=simulateOnce(c,hours,scope,r).transit;
+  a.transit/=count;
+  return a;
+}
+function simulateOnce(c,hours,scope,rep){
+  const hourly=Array.from({length:hours},()=>({queue:0,out:0,input:0}));let sent=0,cost=0,slots=0,wait=0,inTime=0,opening=0,input=0,tripCount=0,breaches=0;
+  let transitSum=0,cancelled=0;
+  const rows=[];
+  for(let i=0;i<3;i++){
+    if(scope>=0&&scope!==i)continue;
+    const queue=[],ready=[],held=[];let pending=240+i*55,unsorted=pending,peak=0,last=0,miss=0;
+    queue.push([0,pending]); opening+=pending;
+    for(let t=0;t<hours;t++){
+      const h=t%24,share=(c.route==='Network Optimizer'?[.98,1.03,.99]:[1.26,.98,.76])[i];
+      const total=Math.round(profile[h]*3*(1+c.uplift/100)*(c.source==='Historical replay'?1+.10*Math.sin(h*2):1));
+      const shares=c.route==='Network Optimizer'?[.98,1.03,.99]:[1.26,.98,.76];
+      const arrivals=i<2?Math.round(total*share/3):total-Math.round(total*shares[0]/3)-Math.round(total*shares[1]/3);
+      hourly[t].input+=arrivals;input+=arrivals;pending+=arrivals;unsorted+=arrivals;queue.push([t,arrivals]);
+      const transfer=(from,amount,consume)=>{while(amount>0&&from.length){let item=from[0],n=Math.min(amount,item[1]);consume(item[0],n);amount-=n;item[1]-=n;if(!item[1])from.shift()}};
+      transfer(queue,Math.round(c.sort*[1,.93,1.04][i]),(a,n)=>{ready.push([a,n]);unsorted-=n});
+      const waiting=pending-unsorted,vehicle=520;
+      let trips;
+      if(c.planVersion&&c.planVersion.trips){const planRow=c.planVersion.trips[i]||[];trips=Math.max(0,planRow[h]|0);}
+      else trips=c.plan==='Long Haul Planning Algo'?Math.ceil(profile[h]*share*(1+c.uplift/100)/vehicle):([0,3,3][h%3]);
+      if(c.dispatch==='Copilot dispatch'&&waiting-trips*vehicle>vehicle/2)trips++;
+      if(trips>c.limit)breaches++;
+      let actual=Math.min(trips,c.limit),cap=vehicle;
+      if(c.utilCap!=null){
+        cap=Math.max(1,Math.floor(vehicle*c.utilCap));
+        for(let j=0;j<trips;j++)held.push(t);
+        actual=0;
+        while(held.length&&actual<c.limit){
+          const load=Math.max(0,Math.min(cap,waiting-actual*cap))*100/cap;
+          const nextGap=(c.planVersion||c.plan==='Long Haul Planning Algo')||(h+1)%3!==0?1:2;
+          if(load<c.loadThreshold&&t-held[0]<c.maxWait)break;
+          held.shift();
+          if(c.dispatch!=='Copilot dispatch'&&c.cancel&&load<c.cancelBelow&&nextGap<=c.nextWithin){cancelled++;continue}
+          actual++;
+        }
+      }
+      tripCount+=actual;slots+=actual*vehicle;cost+=actual*265000;
+      const noise=Math.sin((rep+1)*91.3+(t+1)*23.1+i*73.7)*43758.5453;
+      const transitHours=({P50:3,P80:4,P95:5}[c.eta]||3)+(c.tier==='T3'&&c.delay?(noise-Math.floor(noise))*2:0);
+      transfer(ready,actual*cap,(a,n)=>{pending-=n;sent+=n;hourly[t].out+=n;wait+=(t-a)*n;transitSum+=transitHours*n;if(t-a<=2)inTime+=n;else miss+=n});
+      peak=Math.max(peak,pending);hourly[t].queue+=pending;last=pending;
+    } rows.push({name:stations[i],peak,last,miss});
   }
-  .es-ic svg { color: var(--brand); }
-  .es-title { font-size: 17px; font-weight: 600; }
-  .es-desc { font-size: 12.5px; color: var(--g7); margin-top: 7px; line-height: 1.6; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px;
-    border-radius: 10px; font-size: 10.5px; font-weight: 600;
-    background: var(--info2-bg); color: var(--info2); margin-top: 14px;
-  }
-  .chip::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  const peak=Math.max(...hourly.map(x=>x.queue));
+  return {hourly,rows,peak,sent,opening,input,cost:sent?cost/sent:0,load:slots?100*sent/slots:0,onTime:sent?100*inTime/sent:0,wait:sent?wait/sent:0,transit:sent?transitSum/sent:0,cancelled,breaches,tripCount};
+}
+if(typeof module!=='undefined')module.exports={simulate,base,surge,replay};
+</script><script>const $=id=>document.getElementById(id),ico=n=>`<svg class="icon" aria-hidden="true"><use href="#i-${n}"/></svg>`,fmt=(n,d=0)=>n.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d}),btn=(name,fn,icon,cl='')=>`<button class="${cl}" onclick="${fn}">${icon?ico(icon):''}${name}</button>`;
+const colors=['#3979bd','#188879','#b66527','#7657a4'],tints=['#e7f1ff','#e1f5f0','#fcf0e4','#f0ebf8'],stageIcons=['database','route','truck','warehouse'],stageNames=['Demand input','Sorting & routing','Trip planning','SOC operations'],stageTypes=['DATA','POLICY','POLICY','SOP'];
+const moduleSet=[['Historical replay','Forecast volume'],['Current routing','Network Optimizer'],['Fixed timetable','LH Planner'],[]];
+function notify(v){$('toast').textContent=v;clearTimeout(notify.timer);notify.timer=setTimeout(()=>$('toast').textContent='',3300)}
+function modal(title,html){$('dt').textContent=title;$('dc').innerHTML=html;$('dialog').showModal()}
+function opt(list,val){return list.map(x=>`<option ${x===val?'selected':''}>${x}</option>`).join('')}
+function boxIcon(n,i){return `<span class="tileicon" style="--tone:${colors[i]};--tint:${tints[i]}">${ico(n)}</span>`}
+function metric(title,k,unit,d,better,ic,a,b){let delta=a[k]-b[k],cls=Math.abs(delta)<.0001?'':delta*better>0?'good':'bad';return `<div class="metric"><div class="metrichead">${title}${ico(ic)}</div><div class="num">${fmt(a[k],d)} <small>${unit}</small></div><div class="delta"><b class="${cls}">${delta>0?'+':''}${fmt(delta,d)}${unit==='%'?' pp':''}</b> vs. baseline</div></div>`}
+function chart(a,b,live){let key=series,N=a.hourly.length,all=[...a.hourly,...(live?[]:b.hourly)].map(r=>r[key]),m=Math.max(1000,Math.ceil(Math.max(...all)/1000)*1000),x=i=>45+565*i/(N-1),y=v=>165-150*v/m,pts=r=>r.hourly.map((v,i)=>`${x(i).toFixed(2)},${y(v[key]).toFixed(2)}`).join(' '),line=(r,col,dash='')=>`<polyline fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="${dash}" points="${pts(r)}"/>`;
+return `<div class="chartarea"><div class="charthead"><div><h2>${key==='queue'?'Network backlog':'Dispatch volume'}</h2><span class="tagline">Parcels by hour · WIB</span></div><div class="seg">${['queue','out'].map((v,i)=>btn(i?'Dispatch':'Backlog',`series='${v}';render()`,null,key===v?'on':'')).join('')}</div></div><div class="legend">${!live?'<i class="line baseline"></i> Baseline':''}<i class="line"></i> ${live?'Active SOP':'Candidate'}</div><svg class="chart" viewBox="0 0 624 190" role="img" aria-label="Hourly ${key==='queue'?'backlog':'dispatch volume'} for ${N} hours">${[0,1,2,3].map(i=>`<path d="M45 ${y(m*i/3)}H610" stroke="#e4e8ed" stroke-dasharray="3 3"/><text x="38" y="${y(m*i/3)+4}" text-anchor="end">${i?fmt(m*i/3000,1)+'k':'0'}</text>`).join('')}<polygon points="45,165 ${pts(a)} 610,165" fill="#f2694214"/>${live?'':line(b,'#8194ae','6 4')}${line(a,'#e94d2d')}${[0,Math.floor(N*.25),Math.floor(N*.5),Math.floor(N*.75),N-1].map(i=>`<text x="${x(i)}" y="186" text-anchor="middle">${N===24?String(i).padStart(2,'0')+':00':'+'+i+'h'}</text>`).join('')}</svg></div>`}
+function finding(i,ic,t,s){return `<div class="finding">${boxIcon(ic,i)}<div><h3>${t}</h3><small>${s}</small></div></div>`}
+function stationTable(a,b,live){return `<section class="surface topgap"><div class="sectitle"><div class="row">${ico('warehouse')}<h2>Station breakdown</h2></div><span class="label">${a.rows.length} stations</span></div><div class="scroll"><table class="tbl"><tr><th>Sorting centre</th><th>Peak backlog</th><th>Closing backlog</th><th>${live?'Late parcels':'Peak vs. baseline'}</th></tr>${a.rows.map((r,i)=>`<tr><td><strong>${r.name}</strong></td><td>${fmt(r.peak)}</td><td>${fmt(r.last)}</td><td>${live?fmt(r.miss):fmt(r.peak-b.rows[i].peak)}</td></tr>`).join('')}</table></div></section>`}
+function intro(eye,title,sub,tools=''){return `<div class="intro"><div><div class="eyebrow">${eye}</div><h1>${title}</h1><div class="sub">${sub}</div></div><div class="tools"><span class="concept">Concept demo</span>${tools}</div></div>`}
+function report(live=false){let c=live?{...active,source:'Forecast volume',uplift:35}:run.c,a=simulate(c,live?horizon:24*(c.days||1),live?scope:-1),b=simulate(run.ref,24*(c.days||1)),hr=a.hourly.findIndex(x=>x.queue===a.peak),peak=a.rows.reduce((p,q)=>p.peak>=q.peak?p:q);
+return `${live?'':`<div class="sectitle resulthead" style="padding:0"><div class="row"><h2>Run comparison</h2><span class="pill">Completed</span></div><span class="tagline">Run ${String(run.id).padStart(3,'0')} · ${esc(run.name)} · baseline v1.${run.version}</span></div>`}<section class="metrics">${live?[['Peak backlog',fmt(a.peak),'parcels'],['Executed trips',fmt(a.tripCount),'trips'],['On-time dispatch',fmt(a.onTime,1),'%'],['Cost per parcel',fmt(a.cost),'IDR']].map(([t,n,u])=>`<div class="metric"><div class="metrichead">${t}</div><div class="num">${n} <small>${u}</small></div></div>`).join(''):[['Peak backlog','peak','parcels',0,-1,'layers'],['Cost per parcel','cost','IDR',0,-1,'coins'],['Truck load','load','%',1,1,'truck'],['On-time dispatch','onTime','%',1,1,'timer']].map(k=>metric(...k,a,b)).join('')}</section><section class="analysis">${chart(a,b,live)}<div class="insight"><h2>${live?'Risk outlook':'Run findings'}</h2>${finding(2,'activity',`Peak at ${String(hr%24).padStart(2,'0')}:00 WIB`,`${fmt(a.peak)} parcels queued${live?' in the selected scope':` versus ${fmt(b.peak)} at the baseline peak`}.`)}${finding(1,'warehouse',peak.name,`Largest station peak: ${fmt(peak.peak)} parcels.`)}${finding(3,'clipboard-list','Dock exceptions',`${fmt(a.breaches)} station-hours exceeded available docks. Unserved parcels stay queued.`)}</div></section>${stationTable(a,b,live)}${!live?`<div class="sectitle" style="padding-inline:0"><div class="minor">Mean dispatch wait: ${fmt(a.wait,2)} h · ${fmt(a.tripCount)} trips${c.days?` · Mean transit: ${fmt(a.transit,2)} h · ${fmt(a.cancelled)} cancellations`:""}</div></div>`:''}`}
 
-  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
-  .card {
-    background: #fff; border: 1px solid var(--g4); border-radius: 4px; padding: 14px 16px;
-    text-align: left;
-  }
-  .card-k {
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .55px;
-    color: var(--g7); margin-bottom: 6px;
-  }
-  .card-v { font-size: 13px; font-weight: 600; color: var(--g8); }
-  .card-d { font-size: 11px; color: var(--g7); margin-top: 5px; line-height: 1.5; }
-  @media (max-width: 900px) { .cards { grid-template-columns: minmax(0, 1fr); } }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="head">
-      <div class="page-title">Simulation Analysis</div>
-      <div class="page-desc">End-to-end network simulation and what-if analysis for middle-mile plans.</div>
-    </div>
+const pages=['Simulation Studio'],icons=['clipboard-list'];
+const types=['Strategy simulation','Algorithm backtest'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const key='spx-simulation-tasks-v2',code=id=>'SIM-'+String(id).padStart(3,'0');
+const seed=(id,name,type,c,status='Completed')=>({id,name,type,c:{...c},status,version:1,ref:{...base,source:c.source,uplift:c.uplift},updated:`2026-11-25T0${id}:00:00Z`});
+let tasks=[
+  seed(6,'LH Planner plan check · W48',1,planCheckPreset),seed(5,'Champaign surge',0,surge),seed(4,'LH Planner backtest',1,replay),
+  seed(3,'Evening dock constraint',0,{...surge,limit:2},'Draft'),
+  seed(2,'Network routing comparison',1,{...replay,route:'Network Optimizer'}),
+  seed(1,'Peak-day sort capacity',0,{...surge,sort:2100},'Draft')
+],active={...base},version=1,released=0;
+try{const s=JSON.parse(localStorage.getItem(key));if(s&&Array.isArray(s.tasks)&&s.tasks.length){tasks=s.tasks;active=s.active;version=s.version;released=s.released}}catch{}
+for(const t of tasks)if(t.id===5&&t.name==='Promotion surge')t.name='Champaign surge';
+let page=0,screen='list',run=tasks.find(t=>t.status==='Completed'),draft,nameValue='',type=0,stage=0,editing=0,baseline,baselineVersion;
+let horizon=24,scope=-1,series='queue',filter='All tasks',query='',scenarioFilter='All types';
+function persist(){try{localStorage.setItem(key,JSON.stringify({tasks,active,version,released}))}catch{notify('Browser storage unavailable. Tasks are kept in this session.')}}
+function go(){page=0;screen='list';render();window.scrollTo(0,0)}
+function stamp(t){return new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}).format(new Date(t))}
+function taskRows(){
+  const matches=tasks.filter(t=>(filter==='All tasks'||t.status===filter)&&(scenarioFilter==='All types'||types[t.type]===scenarioFilter)&&`${t.name} ${code(t.id)}`.toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>Date.parse(b.updated)-Date.parse(a.updated)||b.id-a.id);
+  return matches.length?matches.map(t=>`<tr onclick="openTask(${t.id})"><td><button class="tasklink" onclick="event.stopPropagation();openTask(${t.id})">${esc(t.name)}</button><small>${code(t.id)}</small></td><td>${types[t.type]}</td><td><span class="state ${t.status==='Draft'?'draft':'done'}">${t.status}</span></td><td>${stamp(t.updated)}</td><td>${btn(t.status==='Draft'?'Continue':'View results',`event.stopPropagation();openTask(${t.id})`,null,'plain actionlink')}</td></tr>`).join(''):`<tr><td colspan="5" class="zero">No matching tasks. ${btn('Clear filters','resetFilters()',null,'plain')}</td></tr>`;
+}
+function resetFilters(){filter='All tasks';query='';scenarioFilter='All types';render()}
+function dashboard(){return intro('SIMULATION STUDIO','Simulation tasks','Indonesia · Jakarta network',btn('New task','startBuilder()','blocks','primary'))+`<section class="surface"><div class="tasktabs">${['All tasks','Completed','Draft'].map(f=>`<button class="${filter===f?'current':''}" onclick="filter='${f}';render()">${f==='Draft'?'Drafts':f} <span>${tasks.filter(t=>f==='All tasks'||t.status===f).length}</span></button>`).join('')}</div><div class="listtools"><input type="search" value="${esc(query)}" aria-label="Search tasks" placeholder="Search task name or ID" oninput="query=this.value;$('taskrows').innerHTML=taskRows()"><select aria-label="Scenario type filter" onchange="scenarioFilter=this.value;render()">${opt(['All types',...types],scenarioFilter)}</select></div><div class="scroll"><table class="tbl tasktable"><thead><tr><th>Task name</th><th>Scenario type</th><th>Status</th><th>Updated (WIB)</th><th>Action</th></tr></thead><tbody id="taskrows">${taskRows()}</tbody></table></div></section>`}
+function startBuilder(t){editing=t?.id||0;nameValue=t?.name||'';type=t?.type||0;draft={...runtimeDefaults,...(t?.c||planCheckPreset)};baseline={...(t?.ref||active)};baselineVersion=t?.version||version;stage=draft.planVersion?2:0;page=0;screen='build';render();window.scrollTo(0,0)}
+function openTask(id){const t=tasks.find(x=>x.id===id);if(t.status==='Draft'){startBuilder(t);return}run=t;page=0;screen='result';series='queue';render();window.scrollTo(0,0)}
+function template(i){type=i===1?1:0;draft=i===2?{...base,source:'',route:'',plan:'',uplift:0}:{...(i?replay:surge)};delete draft.planVersion;draft={...runtimeDefaults,...draft};stage=0;render()}
+const parts=[
+  ['Historical replay','Demand data',0,'source'],['Forecast volume','Demand data',0,'source'],['Champaign uplift','Demand modifier',0,'uplift'],
+  ['Network Optimizer','Algorithm',1,'route'],['Long Haul Planning Algo','Algorithm',2,'plan'],['Copilot dispatch','Algorithm',2,'dispatch'],
+  ['Current routing','Business rule',1,'route'],['Fixed timetable','Business rule',2,'plan'],['LH Planner plan (import)','Algorithm',2,'plan']
+];
+function applyPart(id,target){const [v,,i,k]=parts[id];if(i!==target){notify(`${v} belongs in ${stageNames[i]}.`);return}if(k==='plan'&&v==='LH Planner plan (import)'){draft.plan='LH Planner plan';stage=i;render();openPlanImport();return}if(k==='uplift'&&draft.source!=='Forecast volume'){notify('Champaign uplift requires forecast volume.');return}draft[k]=k==='uplift'?35:v;if(v==='Historical replay')draft.uplift=0;stage=i;render()}
+function dropPart(e,i){e.preventDefault();const n=e.dataTransfer.getData('application/x-spx-component');if(/^[0-9]+$/.test(n))applyPart(+n,i)}
+function removePart(k){draft[k]=k==='uplift'?0:k==='dispatch'?'No adjustment':'';if(k==='plan')delete draft.planVersion;if(k==='source')draft.uplift=0;render()}
+function slot(k,label,optional=false){const v=draft[k],placed=v&&!(k==='dispatch'&&v==='No adjustment');return `<div class="slot"><small>${label}</small>${placed?`<div class="installed"><span>${k==='plan'&&draft.planVersion?'LH Planner · '+draft.planVersion.label:k==='uplift'?'+'+v+'%':v}</span><button title="Remove ${label}" aria-label="Remove ${label}" onclick="removePart('${k}')">×</button></div>`:`<span class="vacant">${optional?'Optional':'Drop component'}</span>`}</div>`}
+function slots(i){return [()=>slot('source','Data source')+slot('uplift','Volume uplift',true),()=>slot('route','Routing policy'),()=>slot('plan','Source of Long Haul Planning')+slot('dispatch','D0 adjustment',true),()=>`<div class="slot"><small>Sort capacity</small><b>${fmt(draft.sort)} parcels/h</b></div><div class="slot"><small>Dock limit</small><b>${draft.limit} trips/h</b></div>`][i]()}
+function numberField(k,label,min,max){return `<label>${label}<input type="number" value="${draft[k]}" min="${min}" max="${max}" required onchange="if(this.checkValidity()){draft['${k}']=+this.value;render()}else{this.reportValidity();this.value=draft['${k}']}"></label>`}
+function inspector(){const details=[
+  ()=>draft.source==='Forecast volume'?numberField('uplift','Demand uplift (%)',0,100):`<p>${draft.source?'Historical volume is replayed without an uplift.':'No demand source selected.'}</p>`,
+  ()=>`<p>${draft.route==='Network Optimizer'?'Allocates volume across the three sorting centres using the candidate lane split.':draft.route?'Uses the baseline lane allocation for all three sorting centres.':'No routing policy selected.'}</p>`,
+  ()=>planInspector(),
+  ()=>numberField('sort','Sort capacity (parcels/h)',500,4000)+numberField('limit','Dock capacity (trips/h)',1,9)
+];return `<div class="inspector"><div class="iconline">${boxIcon(stageIcons[stage],stage)}<h3>${stageNames[stage]} settings</h3></div><div class="paramrow">${details[stage]()}</div></div>`}
+function builder(){return back()+intro('SIMULATION STUDIO',editing?'Edit draft':'New simulation task',`Jakarta · ${draft.days}-day simulation · Baseline SOP v1.${baselineVersion}`,btn('Save draft',`saveTask('Draft')`,'folder-open')+btn('Run task',`saveTask('Completed')`,'play','primary'))+`<div class="surface"><div class="formstrip"><label>Task name<input maxlength="90" id="taskname" placeholder="e.g. Jakarta champaign surge" value="${esc(nameValue)}" oninput="nameValue=this.value"></label><label>Scenario type<select onchange="type=+this.value">${types.map((s,i)=>`<option value="${i}" ${i===type?'selected':''}>${s}</option>`).join('')}</select></label></div><div class="sectitle builderhead"><h2>Scenario canvas</h2><div class="tools"><small>Load preset</small>${btn('Champaign surge','template(0)')}${btn('LH Planner backtest','template(1)')}${btn('Clear canvas','template(2)',null,'plain')}</div></div><div class="workbench"><div class="palette"><h3>Component library</h3>${['Demand data','Demand modifier','Algorithm','Business rule'].map(g=>`<div class="palettegroup">${g}</div>${parts.flatMap(([n,group,i,k],j)=>group!==g?[]:[`<button draggable="true" ondragstart="event.dataTransfer.setData('application/x-spx-component','${j}')" onclick="applyPart(${j},${i})" title="Add to ${stageNames[i]}">${ico(stageIcons[i])}${n}${((k==='plan'&&n==='LH Planner plan (import)')?draft.plan==='LH Planner plan':(draft[k]===n||k==='uplift'&&draft.uplift>0))?'<span>✓</span>':''}</button>`]).join('')}`).join('')}</div><div class="workarea"><div class="flowgrid">${stageNames.map((n,i)=>`<section class="stage ${stage===i?'focused':''}" style="--tone:${colors[i]}" ondragover="event.preventDefault()" ondrop="dropPart(event,${i})"><button class="stagetitle" onclick="stage=${i};render()">${boxIcon(stageIcons[i],i)}<small>0${i+1} · ${stageTypes[i]}</small><b>${n}</b></button>${slots(i)}</section>`).join('')}</div>${inspector()}<div class="runtime"><strong>Runtime SOP</strong><span>FIFO queues · Hourly ticks · 520 parcels/truck</span></div></div></div><div class="savebar"><span>${['source','route','plan'].filter(k=>draft[k]).length}/3 required components</span></div></div>`+parameterSection()}
+function saveTask(status){const name=nameValue.trim();if(!name){notify('Enter a task name.');$('taskname').focus();return}if(status==='Completed'){let missing=['source','route','plan'].find(k=>!draft[k]);if(missing){stage=['source','route','plan'].indexOf(missing);render();notify(`Add a component to ${stageNames[stage]}.`);return}}
+  const t={id:editing||Math.max(...tasks.map(t=>t.id))+1,name,type,c:{...draft},ref:{...runtimeDefaults,...baseline,uplift:draft.uplift,source:draft.source,days:draft.days,tier:draft.tier,delay:draft.delay,reps:draft.reps},version:baselineVersion,status,updated:new Date().toISOString()};
+  tasks=[t,...tasks.filter(x=>x.id!==t.id)];filter='All tasks';query='';scenarioFilter='All types';if(status==='Draft')go(0);else openTask(t.id);notify(status==='Draft'?'Draft saved':'Simulation completed');persist()}
+function back(){return `<div class="backline">${btn('‹  All tasks','go(0)',null,'plain')}</div>`}
+const sopFields={loadThreshold:'Departure load (%)',maxWait:'Maximum wait (h)',utilCap:'Usable capacity ratio',cancel:'Allow cancellation',cancelBelow:'Cancel below load (%)',nextWithin:'Next trip within (h)',eta:'Transit ETA'};
+function showVal(v){return typeof v==='boolean'?(v?'On':'Off'):String(v)}
+function paramInput(k,label,min,max,step=1,off=false){
+  return `<label>${label}<input type="number" min="${min}" max="${max}" step="${step}" value="${draft[k]}" required ${off?'disabled':''} onchange="if(this.checkValidity()){draft['${k}']=this.valueAsNumber;render()}else{this.reportValidity();this.value=draft['${k}']}"></label>`;
+}
+function paramSelect(k,label,values){return `<label>${label}<select onchange="draft['${k}']=${typeof draft[k]==='number'?'+':''}this.value;render()">${opt(values,draft[k])}</select></label>`}
+function toggle(k,label,off){return `<label class="checkfield"><input type="checkbox" ${draft[k]?'checked':''} ${off?'disabled':''} onchange="draft['${k}']=this.checked;render()">${label}</label>`}
+function parameterSection(){
+  const copilot=draft.dispatch==='Copilot dispatch',ref={...runtimeDefaults,...baseline};
+  const keys=Object.keys(sopFields).filter(k=>!(copilot&&['cancel','cancelBelow','nextWithin'].includes(k))&&!(!draft.cancel&&['cancelBelow','nextWithin'].includes(k)));
+  const summary=changed=>keys.filter(k=>(draft[k]!==ref[k])===changed).map(k=>`<li>${sopFields[k]}: ${changed?showVal(ref[k])+' → ':''}<b>${showVal(draft[k])}</b></li>`).join('')||'<li>None</li>';
+  return `<section class="surface topgap"><div class="sectitle builderhead"><h2>Configure parameters</h2><small>Baseline SOP v1.${baselineVersion}</small></div><div class="paramlayout"><div class="paramsheet">
+  <section><h3>Simulation window</h3><div class="paramrow">${paramSelect('days','Simulation days',[1,7,14])}<span class="minor">Hourly demand · ${draft.source} · +${draft.uplift}%</span></div></section>
+  <section><h3>SOP-4 · Loading and departure</h3><div class="paramrow">${paramInput('loadThreshold',sopFields.loadThreshold,1,100)}${paramInput('maxWait',sopFields.maxWait,0,12)}${paramInput('utilCap',sopFields.utilCap,.1,1,.05)}</div></section>
+  <section><h3>SOP-4 · Trip cancellation</h3><div class="paramrow">${toggle('cancel',sopFields.cancel,copilot)}${paramInput('cancelBelow',sopFields.cancelBelow,0,100,1,copilot||!draft.cancel)}${paramInput('nextWithin',sopFields.nextWithin,1,12,1,copilot||!draft.cancel)}</div>${copilot?'<p class="tip">D0 dispatch is managed by Copilot. The cancellation rule is inactive.</p>':''}</section>
+  <section><h3>SOP-5 · Transit and engine</h3><div class="paramrow">${paramSelect('eta','Transit ETA percentile',['P50','P80','P95'])}${paramSelect('tier','Demo engine',['T2','T3'])}${toggle('delay','Sample transit delays',draft.tier!=='T3')}${paramInput('reps','Repetitions',1,20,1,draft.tier!=='T3'||!draft.delay)}</div><p class="tip">T2 uses fixed transit times. T3 samples transit delays when enabled. Both use the same hourly dispatch model.</p></section></div>
+  <div class="paramsummary"><h3>Compared with baseline</h3><h4>Changed SOP parameters</h4><ul>${summary(true)}</ul><h4>Unchanged SOP parameters</h4><ul>${summary(false)}</ul></div></div>
+  <div class="savebar"><span>${draft.days*24} hourly intervals · ${draft.tier==='T3'&&draft.delay?draft.reps:1} run(s) per policy</span><div class="tools">${btn('Save draft',`saveTask('Draft')`,'folder-open')}${btn('Run task',`saveTask('Completed')`,'play','primary')}</div></div></section>`;
+}
+function parameterReceipt(t){const c=t.c;if(!c.days)return '';return `<details class="surface topgap"><summary class="empty">Run parameters · ${c.days} days · ${c.tier} demo engine · ETA ${c.eta}</summary><div class="empty">Departure at ${c.loadThreshold}% load or after ${c.maxWait} h · Usable capacity ${c.utilCap} × vehicle capacity.<br>Cancellation: ${c.dispatch==='Copilot dispatch'?'managed by Copilot':c.cancel?`below ${c.cancelBelow}% when the next trip is within ${c.nextWithin} h`:'off'}. Transit delay sampling: ${c.tier==='T3'&&c.delay?`${c.reps} repetitions`:'off'}.</div></details>`}
+function results(){const pv=run.c.planVersion;return back()+intro(code(run.id),esc(run.name),`${types[run.type]} · ${stamp(run.updated)} WIB`)+`<div class="canvasfoot surface"><span><strong>Configuration</strong> &nbsp; ${run.c.source} (+${run.c.uplift}%) · ${run.c.route} · ${pv?'LH Planner plan · '+esc(pv.label):run.c.plan} · ${run.c.dispatch}</span><span>${fmt(run.c.sort)} parcels/h · ${run.c.limit} docks</span></div>`+planCheckSection(run)+report()+parameterReceipt(run)}
 
-    <div class="empty-state">
-      <div class="es-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-      <div class="es-title">Simulation Analysis</div>
-      <div class="es-desc">Simulate the full network before a plan is released, and stress it with what-if scenarios.<br>The module UI will be embedded here once its link is available.</div>
-      <div class="chip">Awaiting module link</div>
-    </div>
-
-    <div class="cards">
-      <div class="card"><div class="card-k">E2E simulation</div><div class="card-v">First mile → last mile</div><div class="card-d">Run a plan through the whole chain and surface bottlenecks.</div></div>
-      <div class="card"><div class="card-k">What-if scenarios</div><div class="card-v">Capacity / volume / schedule</div><div class="card-d">Change one lever at a time and compare outcomes side by side.</div></div>
-      <div class="card"><div class="card-k">Global optimality</div><div class="card-v">Validation</div><div class="card-d">Check that the plan is globally optimal, not just locally feasible.</div></div>
-    </div>
-  </div>
-</body>
-</html>
+/* =====================================================================
+   LH Planner plan import + plan check
+   ===================================================================== */
+function planInspector(){
+  const pv=draft.planVersion;
+  const version=pv?`<div class="planver"><div class="pvtop"><span class="pvname">LH Planner · ${esc(pv.label)}</span><span class="pvflag ${pv.flag}">${esc(pv.status)}</span></div>
+    <div class="pvmeta">${esc(pv.published)} · ${pv.tripTotal} planned trips · ${pv.stationHours} station-hours</div>
+    <div class="pvmeta">${esc(pv.note||'')}</div></div>`
+   :`<p class="tip">No plan version yet. Import a published version or a draft to check it.</p>`;
+  return `<div class="paramrow insp-grid"><label style="max-width:340px">Source of Long Haul Planning<select onchange="setPlanSource(this.value)">${opt(['Fixed timetable','Long Haul Planning Algo','LH Planner plan'],draft.plan)}</select></label>
+  ${version}
+  <div class="tools">${btn(pv?'Import another version':'Import LH Planner plan','openPlanImport()','folder-open')}</div>
+  <p class="tip">D0 adjustment: <b>${esc(draft.dispatch)}</b></p></div>`;
+}
+function setPlanSource(v){
+  draft.plan=v;
+  if(v!=='LH Planner plan')delete draft.planVersion;
+  render();
+  if(v==='LH Planner plan'&&!draft.planVersion)openPlanImport();
+}
+function openPlanImport(){
+  const rows=plannerVersions.map(v=>`<div class="pvrow${draft.planVersion&&draft.planVersion.id===v.id?' current':''}" onclick="usePlanVersion('${v.id}')">
+    <div class="pvmain"><span class="pvlabel">LH Planner · ${esc(v.label)}</span>
+    <span class="pvsub">${esc(v.published)} · ${v.tripTotal} trips · ${esc(v.note)}</span></div>
+    <span class="pvflag ${v.flag}">${esc(v.status)}</span></div>`).join('');
+  modal('Import LH Planner plan', `<p class="sub">Pick a plan version from the planner, or import the plan export (JSON) you want the simulation to check.</p>
+  <div class="pvlist">${rows}</div>
+  <div class="dropzone" style="margin-top:14px"><b>Import a plan export</b>
+  <div class="pvsub" style="font-size:12px;color:#65707f">JSON with one row per sorting centre and hour</div>
+  <label class="filelabel">Choose plan JSON<input type="file" accept=".json,application/json" onchange="importPlanFile(this)" hidden></label></div>
+  <p class="tip">Shape: <code class="k">{ "version": "2026-W49 · v1", "published_at": "…", "trips": [{ "station": "Cakung SOC", "hour": 0, "trips": 2 }] }</code></p>
+  <div class="actions">${btn('Download template','downloadPlanTemplate()',null,'plain')}${btn('Cancel','dialog.close()')}</div>`);
+}
+function usePlanVersion(id){
+  const v=plannerVersions.find(x=>x.id===id);if(!v)return;
+  draft.plan='LH Planner plan';draft.planVersion=v;
+  dialog.close();render();
+  notify(`Plan ${v.label} loaded · run the task to check it`);
+}
+function importPlanFile(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const o=JSON.parse(reader.result);
+      const rows=Array.isArray(o.trips)?o.trips:[];
+      if(!rows.length)throw new Error('no "trips" rows found');
+      const trips=[[],[],[]];
+      for(let i=0;i<3;i++)for(let h=0;h<24;h++)trips[i][h]=0;
+      let matched=0;
+      for(const row of rows){
+        const i=stations.indexOf(row.station),h=Number(row.hour);
+        if(i<0||!(h>=0&&h<24))continue;
+        trips[i][h]=Math.max(0,Math.round(Number(row.trips)||0));matched++;
+      }
+      if(!matched)throw new Error('station names or hours do not match the Jakarta network');
+      const pv={id:'import',label:o.version||f.name.replace(/\.json$/i,''),status:'Imported',flag:'pub',published:o.published_at||'imported just now',note:'Imported from '+f.name,trips,stationHours:matched,tripTotal:trips.reduce((a,r)=>a+r.reduce((x,y)=>x+y,0),0)};
+      draft.plan='LH Planner plan';draft.planVersion=pv;
+      dialog.close();render();
+      notify(`Imported ${pv.label} · ${matched} station-hours`);
+    }catch(err){notify('Import failed: '+(err.message||'invalid JSON'))}
+  };
+  reader.readAsText(f);
+}
+function downloadPlanTemplate(){
+  const v=plannerVersions[0],rows=[];
+  for(let i=0;i<3;i++)for(let h=0;h<24;h++)rows.push({station:stations[i],hour:h,trips:v.trips[i][h]});
+  const blob=new Blob([JSON.stringify({version:'2026-W49 · v1',published_at:'2026-11-27',trips:rows},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='lh-planner-plan-template.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function planCheck(c){
+  const pv=c.planVersion;if(!pv||!pv.trips)return null;
+  const limit=c.limit||4,tot={planned:0,need:0,under:0,unplanned:0,over:0},rows=[];
+  for(let i=0;i<3;i++){
+    let planned=0,need=0,under=0,unplanned=0,over=0,worst={h:0,gap:-1};
+    for(let h=0;h<24;h++){
+      const t=Math.max(0,pv.trips[i][h]|0),n=plannerNeed(i,h,c.uplift);
+      planned+=t;need+=n;
+      if(t===0&&n>0)unplanned++;else if(t<n)under++;
+      if(t>limit)over++;
+      if(n-t>worst.gap)worst={h,gap:n-t};
+    }
+    rows.push({name:stations[i],planned,need,under,unplanned,over,worst});
+    tot.planned+=planned;tot.need+=need;tot.under+=under;tot.unplanned+=unplanned;tot.over+=over;
+  }
+  return {rows,tot,limit,pv,verdict:(tot.unplanned||tot.over)?'bad':tot.under?'warn':'ok'};
+}
+function planCheckSection(run){
+  const pc=planCheck(run.c);if(!pc)return '';
+  const v=pc.pv,t=pc.tot;
+  const label=t.unplanned||t.over?'Plan fails the check':t.under?'Exceptions to review':'Plan holds';
+  const items=[];
+  if(t.over)items.push({ic:'truck',h:'Dock limit exceeded',s:`${t.over} station-hours plan more trips than the ${pc.limit}-trip dock limit. The surplus trips cancel on the day and turn into backlog.`});
+  if(t.unplanned)items.push({ic:'clipboard-list',h:'Trips missing',s:`${t.unplanned} station-hours have no planned trip while the forecast is non-zero. Those parcels roll to the next day.`});
+  if(t.under)items.push({ic:'warehouse',h:'Coverage below forecast',s:`${t.under} station-hours are planned below the volume forecast — the plan is short exactly where volume peaks.`});
+  if(!items.length)items.push({ic:'check',h:'No structural exceptions',s:'Every planned hour covers the forecast inside the dock limit.'});
+  const worst=pc.rows.reduce((b,r)=>r.worst.gap>(b&&b.r===r?b.gap:-1)?(r.worst.gap>((b&&b.gap)||-1)?{name:r.name,...r.worst,in:r.worst.h,gap:r.worst.gap}:b):b,null);
+  return `<section class="surface topgap plancheck">
+  <div class="sectitle"><div class="row">${ico('clipboard-list')}<h2>Plan check · LH Planner ${esc(v.label)}</h2></div><span class="verdict ${pc.verdict}">${label}</span></div>
+  <div class="canvasfoot"><span><strong>Checked plan</strong> &nbsp; ${esc(v.status)} · ${esc(v.published)} · ${v.tripTotal} planned trips</span><span>3 sorting centres × 24 h · checked against current SOP</span></div>
+  <div class="scroll"><table class="tbl">
+    <tr><th>Sorting centre</th><th class="n">Planned trips</th><th class="n">Forecast need</th><th class="n">Δ</th><th class="n">Under-planned h</th><th class="n">No-trip h</th><th class="n">Over dock h</th></tr>
+    ${pc.rows.map(r=>`<tr><td><strong>${r.name}</strong></td><td class="n">${fmt(r.planned)}</td><td class="n">${fmt(r.need)}</td><td class="n">${r.planned-r.need>0?'+':''}${fmt(r.planned-r.need)}</td><td class="n">${fmt(r.under)}</td><td class="n">${fmt(r.unplanned)}</td><td class="n">${fmt(r.over)}</td></tr>`).join('')}
+  </table></div>
+  <div class="insight"><h2>Check findings</h2>${items.map((f,i)=>`<div class="finding">${boxIcon(f.ic,i)}<div><h3>${f.h}</h3><small>${esc(f.s)}</small></div></div>`).join('')}
+    <p class="tip">Largest single gap: ${worst?worst.name+' at '+String(worst.in).padStart(2,'0')+':00 — '+worst.gap+' trip(s) short of the forecast.':'none'}</p></div>
+  </section>`;
+}
+function render(){$('view').innerHTML=screen==='build'?builder():screen==='result'?results():dashboard()}
+if(document.body?.dataset.entry==='editor')startBuilder();else render();
+</script></body></html>

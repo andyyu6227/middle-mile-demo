@@ -1,6 +1,6 @@
 # Middle-Mile Optimization · Demo
 
-一个自包含的 HTML demo：中程优化套件（Middle-Mile Optimization）下 5 个模块的统一入口，含 Data Gov 与 LH Copilot 的可用页面，其余模块留了可替换的页面骨架，方便各模块 owner 各自设计后并进同一个 demo。
+一个自包含的 HTML demo：中程优化套件（Middle-Mile Optimization）下 5 个模块的统一入口，含 Data Gov 与 LH Copilot 的可用页面、Simulation Analysis 的 concept demo；其余模块留了可替换的页面骨架，方便各模块 owner 各自设计后并进同一个 demo。
 
 **在线地址**：https://andyyu6227.github.io/middle-mile-demo/
 **仓库**：https://github.com/andyyu6227/middle-mile-demo （public）
@@ -9,10 +9,10 @@
 
 | 二级模块 | 状态 | 文件 |
 |---|---|---|
-| LH Planner | 待接入（页面骨架） | `modules/lh-planner.html` |
+| LH Planner | **Interactive demo**（Ops Console：月度计划 + 版本密封 + DAY DETAIL；右上角 Open in SPX UAT） | `modules/lh-planner.html` + `modules/lh-planner-app.html` |
 | LH Copilot | 可用（dashboard tab，按真实组件 1:1 复刻） | `index.html` + `modules/lh-copilot-workspace.html` |
-| Network Optimization Toolbox | 可用（iframe 内嵌 Network Plan Studio 实时工具，需 VPN + Shopee 账号） | `modules/network-opt.html` |
-| Simulation Analysis | 待接入（页面骨架） | `modules/simulation.html` |
+| Network Optimization Toolbox | **Usable demo**（首页是 Network Plan Studio 首页 1:1 静态截图，右上角 Open demo 打开线上工具；需 VPN + 工具账号） | `modules/network-opt.html` + `modules/network-opt-home.png` |
+| Simulation Analysis | **Concept demo**（Scenario canvas + 导入 LH Planner plan 版本 + plan check） | `modules/simulation.html` |
 | Data Gov | 可用（KPI + 工单 + 数据集单页，右上角 + 可新增 dataset / 校验规则） | `index.html` 内置 |
 
 另外 `user-flow.html`（用户流程）和 `architecture.html`（产品架构）是两张说明图，在 Data Gov 页顶栏可点开。
@@ -24,12 +24,20 @@ index.html                      ← 套件外壳 + Data Gov + LH Copilot
 modules/registry.js             ← 菜单 key → 模块页面 的映射（共用的唯一一个文件）
 modules/<module>.html           ← 每个模块一个自包含页面，owner 自己改
 modules/lh-copilot-workspace.html ← LH Copilot 站点工作台（从真实 app 抓取的静态快照）
+modules/network-opt-home.png    ← Network Plan Studio 首页 1:1 截图（1440×900 屏幕下正好铺满模块区）
+modules/lh-planner-app.html     ← LH Planner Ops Console 设计稿（已脱敏：ID 市场 / 虚构 SOC 与站点 / IDR 成本 / 去掉 workbook 名）
 user-flow.html                  ← 用户流程图
 architecture.html               ← 产品架构图
 .github/workflows/pages.yml     ← push to main 自动发布到 GitHub Pages
 ```
 
-`modules/network-opt.html` 不是重画的页面，而是把内网在线工具 **Network Plan Studio**（`http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/`）用 iframe 框进来，上面加一条 36px 状态条。它有三种状态：本地双击打开 + 连了 VPN → 直接嵌在里面用；没连 VPN → 显示「检查 VPN / 再试一次」；从 https 的 Pages 打开 → 显示「去新标签打开」卡片（http 应用不能被 https 页面框，浏览器会拦混合内容）。所以线上链接里点 Network Optimization Toolbox，看到的是那张卡片，这是预期行为。
+`modules/network-opt.html` 展示的是内网在线工具 **Network Plan Studio**（`http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/`）的首页：一张 **1:1 静态截图**（`modules/network-opt-home.png`，不重画、不 mock），上面一条 36px 状态条只写 `Usable demo`（这个 demo 是能直接用的，不标 concept），右上角 `Open demo` 直接打开线上工具做细节操作。
+
+为什么不 iframe 了：这个工具要 VPN + 自己的账号，https 的 Pages 又拦 http 的 frame（混合内容），框进来在线上永远只是一张错误卡片。静态截图 + 外链在哪儿都能看，也不受网络环境影响。
+
+要更新截图：打开工具 → 登录 → 停在首页 → DevTools device toolbar 设 1140×760、DPR 2 → 截图 → 覆盖 `modules/network-opt-home.png`（不要裁、不要修图）；`index.html` 不用动。
+
+`modules/simulation.html` 是 **Simulation Analysis 的 concept demo**（页面右上角有 `CONCEPT DEMO` 标）：一个 scenario canvas（供需 / routing / 排班 / SOC 四个 stage 拼装），可以在 Trip planning 的 **Source of Long Haul Planning** 里选 Fixed timetable / Long Haul Planning Algo，或者**导入某个版本的 LH Planner plan**（内置 W48 v3 / W48 v1 / W49 draft 三个版本，也可以传 JSON 导出的 plan），跑完之后结果页多一块 **Plan check**：逐 sorting centre 比对计划趟次 vs 预测需求、多少小时没排、多少小时超 dock 上限，并给 verdict（Plan holds / Exceptions to review / Plan fails the check）。数据全是 illustrative，不连生产。
 
 `modules/lh-copilot-workspace.html` 是 LH Copilot 真实 dashboard 里那块 iframe（case list + dock chart + lane heatmap）的整页快照，所以视觉 1:1；它偏大（约 1.2MB，含 84 条 lane × 71 个时段的渲染数据）。要更新它，用真实 app 重新抓一次 iframe 的 HTML 覆盖这个文件即可，`index.html` 不需要动。
 
@@ -41,6 +49,17 @@ architecture.html               ← 产品架构图
 python3 -m http.server 8000
 # http://localhost:8000/
 ```
+
+## 导出单文件（部署 / 分享用）
+
+要发给别人、或者扔到任意静态托管上，打成一个 HTML（所有模块页、图片都内联，约 2.4 MB）：
+
+```bash
+node tools/build-standalone.mjs                  # -> dist/middle-mile-demo.html
+node tools/build-standalone.mjs --out /tmp/x.html
+```
+
+生成的文件双击就能开，不需要任何同目录文件，也可以直接当作附件发出去。改了 `index.html` 或 `modules/` 之后重新跑一次即可；`dist/` 不进 git。
 
 ## 把你的模块设计并进来
 

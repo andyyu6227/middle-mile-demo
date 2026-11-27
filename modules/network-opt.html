@@ -3,40 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Network Plan Studio · Middle-Mile Optimization</title>
+<title>Network Optimization Toolbox · Middle-Mile Optimization</title>
 <!--
   ============================================================================
   Network Optimization Toolbox  —  module page (owner: Network Optimization PM)
   ============================================================================
-  HOW THIS FILE WORKS
-  * Rendered inside the suite shell (index.html) via an <iframe>, using the
-    entry in modules/registry.js:   'network-opt': 'modules/network-opt.html'
-  * This page is a host for the real, running tool — it does NOT re-implement it:
-        Network Plan Studio
+  WHAT THIS PAGE IS
+  * The landing view of the module: ONE static screenshot of the Network Plan
+    Studio home page, captured 1:1 (no redraw, no mock-up), plus a status strip
+    that says the demo is usable and where to open it.
+  * The tool itself is a live app on the internal AI platform:
         http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/
-    The tool is a live app on the internal AI platform (own backend + sign-in),
-    so the only honest way to show it is to frame it, not to copy it.
-  * Two browsers rules make that fragile, hence the two fallbacks below:
-      1) Mixed content — an https page (the shared GitHub Pages demo) may not
-         frame an http app. We detect https up front and show a launch card
-         instead of a broken frame.
-      2) Reachability — the app is intranet-only (VPN) and asks for your
-         Shopee account. A lightweight probe tells us when it is unreachable
-         and replaces the blank frame with a "check VPN / retry" panel.
-  * Opened straight from disk (file://) the frame works as long as you are on
-    the Shopee network. Keep this file self-contained: inline CSS/JS, no CDN.
+    It needs the Shopee network (VPN) and its own account, so it is NOT framed
+    here any more — framing it broke on the https-hosted Pages copy (mixed
+    content) and on any machine off the VPN. Details are one click away, in the
+    top-right "Open demo" link.
+  * Rendered inside the suite shell (index.html) through modules/registry.js:
+        'network-opt': 'modules/network-opt.html'
+    It also opens fine on its own (double-click) — no build step, no CDN.
+
+  HOW TO REFRESH THE SCREENSHOT
+  1. Open the tool in Chrome, log in, and land on the home page.
+  2. Make the viewport exactly 1140 x 760 CSS px, DPR 2 (DevTools → device
+     toolbar → 1140 x 760, DPR 2 → capture screenshot), scroll to the top.
+  3. Overwrite modules/network-opt-home.png (do not crop or edit it).
+  The 36px strip below + the 1140x760 image is exactly the module area at a
+  1440x900 screen; at other sizes the image letterboxes on the tool's own
+  background colour, it never stretches.
   ============================================================================
 -->
 <style>
   :root {
     --brand: #EE4D2D; --brand-bg: #FFF5F0;
     --success: #1CC461; --success-bg: #ECFFF1;
-    --error: #F32345; --error-bg: #FFF0F0;
     --warning: #FFB014; --warning-bg: #FFF8DB;
-    --info: #3274F7; --info-bg: #F0F7FF;
-    --info2: #FF831D; --info2-bg: #FEECE1;
     --g8: #303844; --g7: #7E8692; --g6: #959BA4; --g5: #B5BBC6;
     --g4: #E2E6EC; --g3: #ECF0F4; --g2: #F5F6F9; --g1: #F9FAFC;
+    /* the tool's own page background — the letterbox colour, so it blends */
+    --tool-bg: #FBFCFE;
     --sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
             "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
   }
@@ -44,219 +48,60 @@
   html, body { height: 100%; }
   body {
     font-family: var(--sans); font-size: 13px; color: var(--g8);
-    background: #fff; -webkit-font-smoothing: antialiased;
+    background: var(--tool-bg); -webkit-font-smoothing: antialiased;
     display: flex; flex-direction: column; overflow: hidden;
   }
 
-  /* ---------- slim host bar (the suite already provides the shell chrome) ---------- */
+  /* ---------- status strip (the suite already provides the shell chrome) ---------- */
   .bar {
     flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
     height: 36px; padding: 0 12px; background: var(--g1);
     border-bottom: 1px solid var(--g4);
   }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: 0 0 auto; }
-  .dot.warn { background: var(--warning); }
-  .dot.err { background: var(--error); }
-  .meta { font-size: 11.5px; color: var(--g7); white-space: nowrap; }
+  /* status: the demo is live and usable, not a concept */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+    height: 22px; padding: 0 10px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    color: #12925A; background: var(--success-bg); border: 1px solid #BFE6CE;
+  }
+  .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .meta { font-size: 11.5px; color: var(--g7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sp { flex: 1 1 auto; }
   .btn {
-    display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px;
-    border-radius: 4px; border: 1px solid var(--g4); background: #fff; color: var(--g8);
+    display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 11px;
+    border-radius: 4px; border: 1px solid var(--brand); background: var(--brand); color: #fff;
     font-family: inherit; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer;
     white-space: nowrap;
   }
-  .btn:hover { border-color: var(--g5); }
-  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
-  .btn.primary:hover { background: #D9432800; background: #d94328; border-color: #d94328; }
+  .btn:hover { background: #D8431F; border-color: #D8431F; }
   .btn svg { flex: 0 0 auto; }
-  [hidden] { display: none !important; }
 
-  /* ---------- the framed app ---------- */
-  .stage { flex: 1 1 auto; min-height: 0; position: relative; background: #fff; }
-  .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
-
-  /* Non-blocking warning: the frame stays mounted in case it still comes up. */
-  .banner {
-    flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-    padding: 7px 12px; background: var(--warning-bg); border-bottom: 1px solid #F3E1B4;
-    font-size: 12px; color: #8A5A00;
-  }
-  .banner svg { flex: 0 0 auto; }
-  .banner .sp { flex: 1 1 auto; }
-  .banner button {
-    height: 24px; padding: 0 10px; border-radius: 4px; border: 1px solid #E9CE8E;
-    background: #fff; color: #8A5A00; font-family: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer;
-  }
-  .banner button:hover { background: #FFFDF6; }
-
-  /* When the network cannot be reached we drop the frame instead of leaving a
-     browser error page inside it; "Check again" mounts it back. */
-  .stage-note {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    padding: 24px; color: var(--g7); font-size: 12.5px; text-align: center; line-height: 1.6;
-  }
-  .stage-note b { color: var(--g8); font-weight: 600; }
-
-  /* ---------- fallbacks ---------- */
-  .panel {
-    position: absolute; inset: 0; background: var(--g2);
-    display: flex; align-items: center; justify-content: center; padding: 28px 20px;
-    overflow: auto;
-  }
-  .card {
-    width: 100%; max-width: 560px; background: #fff; border: 1px solid var(--g4);
-    border-radius: 8px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
-  }
-  .card-ic {
-    width: 40px; height: 40px; border-radius: 10px; background: var(--brand-bg);
-    display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--brand);
-  }
-  .card-ic.warn { background: var(--warning-bg); color: var(--warning); }
-  .card-h { font-size: 16px; font-weight: 600; letter-spacing: -.1px; }
-  .card-d { font-size: 12.5px; color: var(--g7); line-height: 1.65; margin-top: 6px; }
-  .steps { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-  .steps li { display: flex; gap: 8px; font-size: 12.5px; color: var(--g8); line-height: 1.5; }
-  .steps .n {
-    flex: 0 0 auto; width: 17px; height: 17px; border-radius: 50%; background: var(--g3);
-    color: var(--g7); font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-    margin-top: 1px;
-  }
-  .card-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
-  .card-note { font-size: 11px; color: var(--g6); margin-top: 12px; line-height: 1.55; }
-  .url {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px;
-    color: var(--g7); background: var(--g2); border: 1px solid var(--g4); border-radius: 4px;
-    padding: 7px 9px; margin-top: 12px; word-break: break-all; user-select: all;
+  /* ---------- the static home page ---------- */
+  .stage { flex: 1 1 auto; min-height: 0; display: flex; background: var(--tool-bg); }
+  .stage img {
+    width: 100%; height: 100%; object-fit: contain; object-position: top center;
+    display: block; user-select: none; -webkit-user-drag: none;
   }
 </style>
 </head>
 <body>
 
   <div class="bar">
-    <span class="dot" id="statusDot"></span>
-    <span class="meta" id="statusText">Live from the internal AI platform — needs VPN and your Shopee account</span>
+    <span class="pill">Usable demo</span>
     <span class="sp"></span>
-    <a class="btn primary" id="btnOpen" target="_blank" rel="noopener"
+    <a class="btn" target="_blank" rel="noopener"
        href="http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/">
-      Open in new tab
+      Open demo
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
     </a>
   </div>
 
-  <div class="banner" id="banner" hidden>
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-    <span>Nothing answered on the internal network — the tool is probably not reachable right now.</span>
-    <span class="sp"></span>
-    <button type="button" id="btnRetry">Check again</button>
+  <div class="stage">
+    <img src="network-opt-home.png"
+         alt="Network Plan Studio home page — plan upload, round-by-round review and the KPI comparison of the current vs optimised network"
+         title="Static preview of the Network Plan Studio home page — use Open demo (top right) to run the tool">
   </div>
 
-  <div class="stage" id="stage">
-    <iframe id="frame" title="Network Plan Studio" allow="clipboard-read; clipboard-write"></iframe>
-    <div class="stage-note" id="stageNote" hidden>
-      <div><b>Network Plan Studio is not loaded</b><br>It runs on the internal network — reconnect the Shopee VPN, then press <b>Check again</b>.</div>
-    </div>
-  </div>
-
-<script>
-(function () {
-  'use strict';
-
-  var LIVE = 'http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/';
-  var frame = document.getElementById('frame');
-  var stage = document.getElementById('stage');
-  var dot = document.getElementById('statusDot');
-  var statusText = document.getElementById('statusText');
-  var banner = document.getElementById('banner');
-  var stageNote = document.getElementById('stageNote');
-  var btnRetry = document.getElementById('btnRetry');
-
-  function setStatus(kind, text) {
-    dot.className = 'dot' + (kind ? ' ' + kind : '');
-    statusText.textContent = text;
-  }
-
-  function panelHTML(opts) {
-    return '<div class="panel"><div class="card">' +
-      '<div class="card-ic' + (opts.warn ? ' warn' : '') + '">' + opts.icon + '</div>' +
-      '<div class="card-h">' + opts.title + '</div>' +
-      '<div class="card-d">' + opts.desc + '</div>' +
-      (opts.steps ? '<ul class="steps">' + opts.steps.map(function (s, i) {
-        return '<li><span class="n">' + (i + 1) + '</span><span>' + s + '</span></li>';
-      }).join('') + '</ul>' : '') +
-      '<div class="url">' + LIVE + '</div>' +
-      '<div class="card-actions">' +
-        '<a class="btn primary" target="_blank" rel="noopener" href="' + LIVE + '">Open Network Plan Studio</a>' +
-      '</div>' +
-      (opts.note ? '<div class="card-note">' + opts.note + '</div>' : '') +
-    '</div></div>';
-  }
-
-  var ICON_GLOBE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>';
-
-  function showPanel(opts) {
-    var old = stage.querySelector('.panel');
-    if (old) old.parentNode.removeChild(old);
-    stage.insertAdjacentHTML('beforeend', panelHTML(opts));
-  }
-
-  function clearPanel() {
-    var old = stage.querySelector('.panel');
-    if (old) old.parentNode.removeChild(old);
-  }
-
-  /* The shared demo is served over https (GitHub Pages); browsers block an
-     http frame there before any request is made, so do not even try. */
-  if (location.protocol === 'https:') {
-    frame.removeAttribute('src');
-    setStatus('warn', 'Served over https — the tool cannot be framed here');
-    showPanel({
-      warn: true,
-      icon: ICON_GLOBE,
-      title: 'Open Network Plan Studio in its own tab',
-      desc: 'This tool runs on the internal AI platform over plain http. The shared demo is served over https, ' +
-            'so the browser blocks it from being framed here (mixed content). Open it directly instead — ' +
-            'it takes one click.',
-      steps: [
-        'Connect to the Shopee network (VPN).',
-        'Open the tool and sign in with your Shopee account.',
-        'Upload the current plan, parse it, then review round 1 (swap routes, ban list, local optimization).'
-      ],
-      note: 'Opened from disk (file://) this page embeds the tool live; only the https-hosted copy needs the new tab.'
-    });
-    return;
-  }
-
-  function mount() {
-    clearPanel();
-    banner.hidden = true;
-    stageNote.hidden = true;
-    frame.style.display = '';
-    setStatus('', 'Live from the internal AI platform — needs VPN and your Shopee account');
-    frame.src = LIVE;
-    probe();
-  }
-
-  /* Cross-origin, so we cannot read the response — only whether it answered.
-     A signed-out answer (401) still counts as "reachable"; that is the app's
-     own sign-in wall, not a network problem. */
-  function probe() {
-    if (!window.fetch) return;
-    var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 9000);
-    fetch(LIVE, { mode: 'no-cors', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
-      .then(function () { clearTimeout(timer); })
-      .catch(function () {
-        clearTimeout(timer);
-        setStatus('err', 'Not reachable — check your VPN');
-        banner.hidden = false;
-        frame.style.display = 'none';
-        stageNote.hidden = false;
-      });
-  }
-
-  btnRetry.addEventListener('click', mount);
-  mount();
-})();
-</script>
 </body>
 </html>
