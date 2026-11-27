@@ -9,7 +9,7 @@
 
 | 二级模块 | 状态 | 文件 |
 |---|---|---|
-| LH Planner | **Interactive demo**（Ops Console：月度计划 + 版本密封 + DAY DETAIL；右上角 Open in SPX UAT） | `modules/lh-planner.html` + `modules/lh-planner-app.html` |
+| LH Planner | **Usable demo**（Linehaul Planning 首页 1:1 截图；右上角 Open in SPX UAT 打开真工具） | `modules/lh-planner.html` + `modules/lh-planner-home.png` |
 | LH Copilot | 可用（dashboard tab，按真实组件 1:1 复刻） | `index.html` + `modules/lh-copilot-workspace.html` |
 | Network Optimization Toolbox | **Usable demo**（首页是 Network Plan Studio 首页 1:1 静态截图，右上角 Open demo 打开线上工具；需 VPN + 工具账号） | `modules/network-opt.html` + `modules/network-opt-home.png` |
 | Simulation Analysis | **Concept demo**（Scenario canvas + 导入 LH Planner plan 版本 + plan check） | `modules/simulation.html` |
@@ -25,11 +25,14 @@ modules/registry.js             ← 菜单 key → 模块页面 的映射（共�
 modules/<module>.html           ← 每个模块一个自包含页面，owner 自己改
 modules/lh-copilot-workspace.html ← LH Copilot 站点工作台（从真实 app 抓取的静态快照）
 modules/network-opt-home.png    ← Network Plan Studio 首页 1:1 截图（1440×900 屏幕下正好铺满模块区）
-modules/lh-planner-app.html     ← LH Planner Ops Console 设计稿（已脱敏：ID 市场 / 虚构 SOC 与站点 / IDR 成本 / 去掉 workbook 名）
+modules/lh-planner-home.png     ← LH Planner · Linehaul Planning 首页 1:1 截图（1140×695 @2x，1440 屏正好铺满模块区）
+modules/lh-planner-app.html     ← 早期交互原型（Ops Console 月历 + DAY DETAIL，已脱敏），当前页面不再引用，留档用
 user-flow.html                  ← 用户流程图
 architecture.html               ← 产品架构图
 .github/workflows/pages.yml     ← push to main 自动发布到 GitHub Pages
 ```
+
+`modules/lh-planner.html` 同 network-opt 一套打法：36px 状态条 + 一张 1:1 截图（`modules/lh-planner-home.png`，取自 spx.uat 的 Linehaul Planning 首页），右上角 `Open in SPX UAT` 打开真工具（要 VPN + SPX 账号）。注意这张截图带 SPX 的斜纹水印（CONFIDENTIAL + 账号邮箱），已确认直接放在 public 仓库。
 
 `modules/network-opt.html` 展示的是内网在线工具 **Network Plan Studio**（`http://sg10.aip.mlp.shopee.io/aip-svc-100287/feedback-network/`）的首页：一张 **1:1 静态截图**（`modules/network-opt-home.png`，不重画、不 mock），上面一条 36px 状态条只写 `Usable demo`（这个 demo 是能直接用的，不标 concept），右上角 `Open demo` 直接打开线上工具做细节操作。
 

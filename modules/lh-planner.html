@@ -9,19 +9,20 @@
   LH Planner  —  module page (owner: LH Planner PM)
   ============================================================================
   WHAT THIS PAGE IS
-  * A thin host for the interactive LH Planner demo (Ops Console): a 36px strip
-    plus an iframe that fills the rest. The page itself is in
-        modules/lh-planner-app.html
-    i.e. the design-tool export of the planner month view, patched:
-      - its own SPX sidebar and breadcrumb are hidden (the suite has both)
-      - Google Fonts links stripped, so it renders offline
-      - every real value in window.LH_STATIC replaced with synthetic ones
-        (market ID, Jakarta SOC + sites, IDR costs, workbook name dropped)
-  * The strip keeps one honest exit: "Open in SPX UAT" -> the real tool.
-    That app needs the Shopee network and an SPX account, so it is linked,
-    never framed.
-  * Opened from disk (file://) the iframe works with no build step and no CDN.
-    Keep it that way: inline CSS/JS only.
+  * The landing view of the module: ONE 1:1 screenshot of Linehaul Planning in
+    SPX (task list, Planning Tasks / Result Sets, the task table), captured
+    straight from the running tool — no redraw, no mock-up.
+        source: https://spx.uat.shopee.co.id/#/linehaul/id-planner
+  * The tool needs the Shopee network and an SPX account, so it is never framed
+    here; the strip keeps one link out to it.
+  * The screenshot is 1140x695 CSS px @2x (2280x1390), i.e. exactly the module
+    area at a 1440x900 screen. At other sizes it is contained, never stretched.
+    To refresh it: open the tool, land on Linehaul Planning, screenshot at
+    1140 wide / DPR 2, overwrite modules/lh-planner-home.png, leave this file
+    alone (the strip is the only markup).
+  * The earlier interactive concept prototype still lives in
+    modules/lh-planner-app.html (month calendar, sealed versions, day detail).
+    It is not linked from this page: the landing view must show the real tool.
   ============================================================================
 -->
 <style>
@@ -30,6 +31,8 @@
     --success: #1CC461; --success-bg: #ECFFF1;
     --g8: #303844; --g7: #7E8692; --g6: #959BA4; --g5: #B5BBC6;
     --g4: #E2E6EC; --g3: #ECF0F4; --g2: #F5F6F9; --g1: #F9FAFC;
+    /* the tool's own page background — the letterbox colour, so it blends */
+    --tool-bg: #F5F7FB;
     --sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
             "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
   }
@@ -37,7 +40,7 @@
   html, body { height: 100%; }
   body {
     font-family: var(--sans); font-size: 13px; color: var(--g8);
-    background: var(--g2); -webkit-font-smoothing: antialiased;
+    background: var(--tool-bg); -webkit-font-smoothing: antialiased;
     display: flex; flex-direction: column; overflow: hidden;
   }
 
@@ -65,16 +68,19 @@
   .btn:hover { background: #D8431F; border-color: #D8431F; }
   .btn svg { flex: 0 0 auto; }
 
-  /* ---------- the app ---------- */
-  .stage { flex: 1 1 auto; min-height: 0; display: flex; background: #fff; }
-  .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+  /* ---------- the static landing page ---------- */
+  .stage { flex: 1 1 auto; min-height: 0; display: flex; background: var(--tool-bg); }
+  .stage img {
+    width: 100%; height: 100%; object-fit: contain; object-position: top center;
+    display: block; user-select: none; -webkit-user-drag: none;
+  }
 </style>
 </head>
 <body>
 
   <div class="bar">
-    <span class="pill">Interactive demo</span>
-    <span class="meta">Ops Console — month plan by SOC, sealed versions, day detail · illustrative data</span>
+    <span class="pill">Usable demo</span>
+    <span class="meta">Linehaul Planning — planning tasks by SOC, 1:1 screenshot of the running tool</span>
     <span class="sp"></span>
     <a class="btn" target="_blank" rel="noopener"
        href="https://spx.uat.shopee.co.id/#/linehaul/id-planner">
@@ -84,7 +90,9 @@
   </div>
 
   <div class="stage">
-    <iframe src="lh-planner-app.html" title="LH Planner · Ops Console"></iframe>
+    <img src="lh-planner-home.png"
+         alt="LH Planner · Linehaul Planning — Planning Tasks list with task status, SOC progress, created by and create / complete times"
+         title="1:1 screenshot of LH Planner · Linehaul Planning — use Open in SPX UAT (top right) to run it">
   </div>
 
 </body>
