@@ -7,3 +7,6 @@ v2-catalog.html
 v3-observability.html
 v4-governance.html
 index.full.html
+
+# standalone export (rebuild with: node tools/build-standalone.mjs)
+dist/
