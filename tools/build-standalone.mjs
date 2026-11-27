@@ -44,6 +44,8 @@ const pages = [...new Set([
 
 /* ---------- 2. inline relative assets inside each page ---------- */
 
+const escAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif',
                webp: 'image/webp', svg: 'image/svg+xml' };
 
@@ -63,6 +65,17 @@ function inlineLocalAssets(html, pagePath) {
 
   html = html.replace(/\b(src|href)="([^"]+)"/g, (all, attr, url) => attr + '="' + replaceRef(url) + '"');
   html = html.replace(/url\(\s*(['"]?)([^)'"]+)\1\s*\)/g, (all, q, url) => 'url(' + q + replaceRef(url) + q + ')');
+
+  /* a module page may itself frame a sibling page (lh-planner -> lh-planner-app).
+     Relative src would die inside a blob:, so fold the child in as srcdoc. */
+  html = html.replace(/<iframe([^>]*?)\ssrc="([^"]+\.html)"([^>]*)>/g, (all, pre, url, post) => {
+    const abs = join(dir, url);
+    if (!existsSync(abs)) return all;
+    hits++;
+    const child = readFileSync(abs, 'utf8');
+    return '<iframe' + pre + ' srcdoc="' + escAttr(child) + '"' + post + '>';
+  });
+
   return { html, hits };
 }
 
